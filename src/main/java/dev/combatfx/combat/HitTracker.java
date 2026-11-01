@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -65,7 +64,7 @@ public final class HitTracker {
 			return;
 		}
 
-		long now = Util.getMillis();
+		long now = System.currentTimeMillis();
 		IndicatorManager.prune(now);
 
 		for (int i = PENDING.size() - 1; i >= 0; i--) {
