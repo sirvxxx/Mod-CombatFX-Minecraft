@@ -3,7 +3,6 @@ package dev.combatfx.render;
 import dev.combatfx.Config;
 import dev.combatfx.combat.ComboManager;
 import java.util.List;
-import net.minecraft.Util;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -21,7 +20,7 @@ public final class CombatHud {
 		LocalPlayer player = mc.player;
 		if (player == null || mc.level == null) return;
 
-		long now = Util.getMillis();
+		long now = System.currentTimeMillis();
 		drawIndicators(g, mc, player, deltaTracker.getGameTimeDeltaPartialTick(false), now);
 		drawCombo(g, mc, now);
 	}
