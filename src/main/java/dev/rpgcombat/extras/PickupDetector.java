@@ -53,7 +53,7 @@ public final class PickupDetector {
 			prev = new ItemStack[n];
 		}
 
-		boolean quiet = quietTicks > 0 || mc.screen != null || !cfg.pickupEnabled;
+		boolean quiet = quietTicks > 0 || ScreenUtil.isOpen(mc) || !cfg.pickupEnabled;
 		if (quietTicks > 0) quietTicks--;
 
 		if (quiet) {
