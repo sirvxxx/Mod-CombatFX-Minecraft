@@ -1,5 +1,6 @@
 package dev.combatfx.combat;
 
+import dev.combatfx.CombatConfig;
 import dev.combatfx.Config;
 import dev.combatfx.render.IndicatorManager;
 import dev.combatfx.render.Tier;
@@ -42,6 +43,7 @@ public final class HitTracker {
 	public static InteractionResult onAttack(Player player, Level level, InteractionHand hand,
 			Entity target, EntityHitResult hit) {
 		Minecraft mc = Minecraft.getInstance();
+		if (!CombatConfig.get().enabled) return InteractionResult.PASS;
 		if (!level.isClientSide() || player != mc.player) return InteractionResult.PASS;
 		if (!(target instanceof LivingEntity living) || !living.isAlive()) return InteractionResult.PASS;
 
@@ -55,13 +57,14 @@ public final class HitTracker {
 	}
 
 	public static void onClientTick(Minecraft mc) {
-		if (mc.level == null || mc.player == null) {
+		if (mc.level == null || mc.player == null || !CombatConfig.get().enabled) {
 			PENDING.clear();
 			IndicatorManager.clear();
 			ComboManager.reset();
 			return;
 		}
 
+		CombatConfig cfg = CombatConfig.get();
 		long now = System.currentTimeMillis();
 		IndicatorManager.prune(now);
 
@@ -75,7 +78,7 @@ public final class HitTracker {
 
 				if (damage > 0.05f) {
 					Tier tier = p.crit ? Tier.CRIT
-							: (damage >= Config.HEAVY_DAMAGE ? Tier.HEAVY : Tier.NORMAL);
+							: (damage >= cfg.heavyDamage ? Tier.HEAVY : Tier.NORMAL);
 
 					ThreadLocalRandom rnd = ThreadLocalRandom.current();
 					IndicatorManager.add(

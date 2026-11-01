@@ -1,5 +1,6 @@
 package dev.combatfx.render;
 
+import dev.combatfx.CombatConfig;
 import dev.combatfx.combat.ComboManager;
 import java.util.List;
 import net.minecraft.client.DeltaTracker;
@@ -10,8 +11,8 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 
 /**
- * Semua animasi di sini hanya interpolasi linier / kuadrat / kubik sederhana
- * berdasarkan umur (ms). Tidak ada alokasi objek per frame.
+ * Semua animasi hanya interpolasi sederhana berdasarkan umur (ms).
+ * Tidak ada alokasi objek per frame.
  */
 public final class CombatHud {
 	private CombatHud() {}
@@ -19,20 +20,27 @@ public final class CombatHud {
 	private static final Projector PROJ = new Projector();
 
 	public static void extract(GuiGraphicsExtractor g, DeltaTracker deltaTracker) {
+		CombatConfig cfg = CombatConfig.get();
+		if (!cfg.enabled) return;
+
 		Minecraft mc = Minecraft.getInstance();
 		LocalPlayer player = mc.player;
 		if (player == null || mc.level == null) return;
 
 		long now = System.currentTimeMillis();
-		drawIndicators(g, mc, player, deltaTracker.getGameTimeDeltaPartialTick(false), now);
-		drawCombo(g, mc, now);
+		if (cfg.showDamageNumbers) {
+			drawIndicators(g, mc, player, cfg, deltaTracker.getGameTimeDeltaPartialTick(false), now);
+		}
+		if (cfg.showCombo) {
+			drawCombo(g, mc, cfg, now);
+		}
 	}
 
 	// ==================================================================
 	// Floating damage numbers
 	// ==================================================================
 	private static void drawIndicators(GuiGraphicsExtractor g, Minecraft mc, LocalPlayer player,
-			float partialTick, long now) {
+			CombatConfig cfg, float partialTick, long now) {
 		List<FloatingText> list = IndicatorManager.list();
 		if (list.isEmpty()) return;
 		if (!mc.options.getCameraType().isFirstPerson()) return;
@@ -48,23 +56,18 @@ public final class CombatHud {
 
 			float prog = (float) age / (float) t.lifeMs;
 
-			// ease-out kubik: cepat di awal, melambat di akhir
 			float inv = 1f - prog;
-			float ease = 1f - inv * inv * inv;
+			float ease = 1f - inv * inv * inv; // ease-out kubik
 
-			// naik + sebaran horizontal acak (world space)
 			double wx = t.x + t.driftX * ease;
 			double wy = t.y + tier.riseBlocks * ease;
 			double wz = t.z + t.driftZ * ease;
 			if (!PROJ.project(wx, wy, wz)) continue;
 
-			// fade: penuh sampai 60% umur, lalu menghilang linier
 			float alpha = prog < 0.6f ? 1f : 1f - (prog - 0.6f) / 0.4f;
-			int a = Math.max(5, Math.min(255, (int) (alpha * 255f))); // alpha <= 3 dibuang vanilla
+			int a = Math.max(5, Math.min(255, (int) (alpha * 255f)));
 
-			// ---- pop-up dua fase ----
-			// 0-70ms   : 0.35x -> puncak (membesar cepat)
-			// 70-230ms : puncak -> 1.0x  (mengecil ke ukuran normal)
+			// pop dua fase: 0-70ms membesar cepat, 70-230ms menyusut ke normal
 			float pop;
 			if (age < 70L) {
 				pop = Mth.lerp(age / 70f, 0.35f, tier.popPeak);
@@ -75,29 +78,28 @@ public final class CombatHud {
 			}
 
 			float distScale = Mth.clamp(5.5f / PROJ.depth, 0.75f, 2.3f);
-			float scale = distScale * tier.baseScale * pop;
+			float scale = distScale * tier.baseScale * pop * cfg.numberScale;
 
-			// crit: getar kecil di awal
 			float shake = 0f;
 			if (tier == Tier.CRIT && age < 240L) {
 				shake = (float) Math.sin(age * 0.1) * 2.5f * (1f - age / 240f);
 			}
 
 			int w = font.width(t.text);
-			int color = (a << 24) | tier.rgb;
+			int color = (a << 24) | tier.rgb();
 
 			g.pose().pushMatrix();
 			g.pose().translate(PROJ.sx + shake, PROJ.sy);
 			g.pose().scale(scale, scale);
 
-			if (tier.outline) {
-				int ob = a << 24; // hitam
+			if (tier.outline && cfg.numberOutline) {
+				int ob = a << 24;
 				g.text(font, t.text, -w / 2 - 1, -4, ob, false);
 				g.text(font, t.text, -w / 2 + 1, -4, ob, false);
 				g.text(font, t.text, -w / 2, -5, ob, false);
 				g.text(font, t.text, -w / 2, -3, ob, false);
 			}
-			g.text(font, t.text, -w / 2, -4, color, true); // true = drop shadow
+			g.text(font, t.text, -w / 2, -4, color, true);
 
 			g.pose().popMatrix();
 		}
@@ -106,7 +108,7 @@ public final class CombatHud {
 	// ==================================================================
 	// Combo counter
 	// ==================================================================
-	private static void drawCombo(GuiGraphicsExtractor g, Minecraft mc, long now) {
+	private static void drawCombo(GuiGraphicsExtractor g, Minecraft mc, CombatConfig cfg, long now) {
 		int combo = ComboManager.count(now);
 		if (combo <= 0) return;
 
@@ -114,31 +116,28 @@ public final class CombatHud {
 		var window = mc.getWindow();
 
 		long remain = ComboManager.remainingMs(now);
-		float fade = Math.min(1f, remain / 250f); // menghilang halus di 250ms terakhir
+		float fade = Math.min(1f, remain / 250f);
 		int a = Math.max(5, (int) (fade * 255f));
 
-		// ---- denyut saat combo naik: overshoot lalu mengendur ----
-		float pt = Math.min(ComboManager.sinceIncrementMs(now) / 260f, 1f);
-		float pulse = 1f + 0.55f * (1f - pt) * (1f - pt);
-		// combo tinggi: detak halus terus-menerus
-		if (combo >= 10) {
-			pulse += 0.04f * (float) Math.sin(now * 0.014);
+		float pulse = 1f;
+		if (cfg.comboPulse) {
+			float pt = Math.min(ComboManager.sinceIncrementMs(now) / 260f, 1f);
+			pulse = 1f + 0.55f * (1f - pt) * (1f - pt);
+			if (combo >= 10) pulse += 0.04f * (float) Math.sin(now * 0.014);
 		}
 
-		// makin tinggi combo -> makin besar (cap 40)
-		float scale = (1.5f + Math.min(combo, 40) * 0.03f) * pulse;
+		float scale = (1.5f + Math.min(combo, 40) * 0.03f) * pulse * cfg.comboScale;
 		int rgb = comboColor(combo, now);
 
 		String label = ComboManager.label();
-		float x = window.getGuiScaledWidth() / 2f + 34f; // kanan crosshair
-		float y = window.getGuiScaledHeight() / 2f - 8f;
+		float x = window.getGuiScaledWidth() / 2f + cfg.comboOffsetX;
+		float y = window.getGuiScaledHeight() / 2f + cfg.comboOffsetY;
 		float labelW = font.width(label) * scale;
 
-		// ---- angka "x12" ----
 		g.pose().pushMatrix();
 		g.pose().translate(x, y);
 		g.pose().scale(scale, scale);
-		if (combo >= 10) { // outline gelap untuk combo tinggi supaya "menyala"
+		if (combo >= 10) {
 			int ob = (a * 200 / 255) << 24;
 			g.text(font, label, -1, 0, ob, false);
 			g.text(font, label, 1, 0, ob, false);
@@ -148,14 +147,14 @@ public final class CombatHud {
 		g.text(font, label, 0, 0, (a << 24) | rgb, true);
 		g.pose().popMatrix();
 
-		// ---- tulisan kecil "COMBO" ----
 		g.pose().pushMatrix();
 		g.pose().translate(x + labelW + 3f, y + 2f * scale);
 		g.pose().scale(0.75f, 0.75f);
 		g.text(font, "COMBO", 0, 0, (a << 24) | 0xFFFFFF, true);
 		g.pose().popMatrix();
 
-		// ---- timeout bar: menyusut halus per frame (berbasis ms, bukan per tick) ----
+		if (!cfg.showComboBar) return;
+
 		int barW = Math.max(40, (int) labelW);
 		int barH = 3;
 		int barX = (int) x;
@@ -164,26 +163,25 @@ public final class CombatHud {
 		int filled = Math.round(barW * frac);
 
 		int barRgb = rgb;
-		if (frac < 0.3f) { // hampir habis -> bergeser ke merah
+		if (frac < 0.3f) {
 			barRgb = lerpColor(0xFF3030, rgb, frac / 0.3f);
 		}
 
 		int bgA = a * 150 / 255;
-		g.fill(barX - 1, barY - 1, barX + barW + 1, barY + barH + 1, (bgA << 24));       // bingkai
-		g.fill(barX, barY, barX + barW, barY + barH, ((bgA * 2 / 3) << 24) | 0x202020);  // latar
+		g.fill(barX - 1, barY - 1, barX + barW + 1, barY + barH + 1, (bgA << 24));
+		g.fill(barX, barY, barX + barW, barY + barH, ((bgA * 2 / 3) << 24) | 0x202020);
 		if (filled > 0) {
 			g.fill(barX, barY, barX + filled, barY + barH, (a << 24) | barRgb);
-			g.fill(barX, barY, barX + filled, barY + 1, (a << 24) | brighten(barRgb));   // highlight atas
+			g.fill(barX, barY, barX + filled, barY + 1, (a << 24) | brighten(barRgb));
 		}
 	}
 
-	/** Makin tinggi combo -> warna makin terang/menyala. */
 	private static int comboColor(int combo, long now) {
-		if (combo < 5) return 0xB8C0D0;   // 1-4   : putih kebiruan redup
-		if (combo < 10) return 0xFFE066;  // 5-9   : kuning
-		if (combo < 20) return 0xFFA032;  // 10-19 : oranye
-		if (combo < 30) return 0xFF5A3C;  // 20-29 : merah menyala
-		return rainbow(now);              // 30+   : pelangi
+		if (combo < 5) return 0xB8C0D0;
+		if (combo < 10) return 0xFFE066;
+		if (combo < 20) return 0xFFA032;
+		if (combo < 30) return 0xFF5A3C;
+		return rainbow(now);
 	}
 
 	private static int lerpColor(int from, int to, float t) {

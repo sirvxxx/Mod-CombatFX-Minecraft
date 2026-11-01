@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
-  "id": "combatfx",
+  "id": "rpgcombat",
   "version": "${version}",
-  "name": "CombatFX",
-  "description": "Floating damage numbers, combo counter, and critical hit styling (client-side).",
+  "name": "RPG Combat HUD",
+  "description": "Custom RPG HUD + CombatFX (floating damage, combo counter, crit) dengan satu menu pengaturan dan satu file config.",
   "authors": ["V"],
   "license": "MIT",
   "environment": "client",
   "entrypoints": {
-    "client": ["dev.combatfx.CombatFxClient"]
+    "client": ["dev.rpgcombat.RpgCombatClient"]
   },
   "depends": {
     "fabricloader": ">=0.19.3",
-    "minecraft": ">=26.1.2",
+    "minecraft": "~26.2",
     "java": ">=25",
     "fabric-api": "*"
   }

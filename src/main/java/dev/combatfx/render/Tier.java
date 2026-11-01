@@ -1,14 +1,15 @@
 package dev.combatfx.render;
 
-/** Tuning visual per jenis hit. Ubah angkanya untuk mengatur "rasa" animasinya. */
-public enum Tier {
-	//     warna RGB  skala  puncak  naik    durasi  drift  outline
-	//                dasar  pop     (blok)  (ms)    (blok)
-	NORMAL(0xFF3B3B, 1.00f, 1.35f, 1.20f, 1200L, 0.35f, false), // merah standar
-	HEAVY (0xFF8A1F, 1.25f, 1.65f, 1.45f, 1350L, 0.50f, true),  // oranye menyala
-	CRIT  (0xFFC400, 1.55f, 2.10f, 1.70f, 1500L, 0.70f, true);  // kuning keemasan
+import dev.combatfx.CombatConfig;
 
-	public final int rgb;
+/** Tuning animasi per jenis hit. Warna dibaca dari config (bisa diubah di menu). */
+public enum Tier {
+	//     skala  puncak  naik    durasi  drift  outline
+	//     dasar  pop     (blok)  (ms)    (blok)
+	NORMAL(1.00f, 1.35f, 1.20f, 1200L, 0.35f, false),
+	HEAVY (1.25f, 1.65f, 1.45f, 1350L, 0.50f, true),
+	CRIT  (1.55f, 2.10f, 1.70f, 1500L, 0.70f, true);
+
 	public final float baseScale;
 	public final float popPeak;
 	public final float riseBlocks;
@@ -16,14 +17,21 @@ public enum Tier {
 	public final float driftBlocks;
 	public final boolean outline;
 
-	Tier(int rgb, float baseScale, float popPeak, float riseBlocks, long lifeMs,
-			float driftBlocks, boolean outline) {
-		this.rgb = rgb;
+	Tier(float baseScale, float popPeak, float riseBlocks, long lifeMs, float driftBlocks, boolean outline) {
 		this.baseScale = baseScale;
 		this.popPeak = popPeak;
 		this.riseBlocks = riseBlocks;
 		this.lifeMs = lifeMs;
 		this.driftBlocks = driftBlocks;
 		this.outline = outline;
+	}
+
+	public int rgb() {
+		CombatConfig c = CombatConfig.get();
+		return switch (this) {
+			case NORMAL -> c.colorNormal;
+			case HEAVY -> c.colorHeavy;
+			case CRIT -> c.colorCrit;
+		};
 	}
 }
