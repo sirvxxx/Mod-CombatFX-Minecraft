@@ -1,0 +1,37 @@
+name: Build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:   # biar bisa dijalankan manual dari tab Actions
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+
+      # Repo-mu belum punya gradlew, jadi Gradle dipasang langsung oleh action ini
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: current   # harus 9.4+ untuk Loom 26.x
+
+      - name: Build
+        run: gradle build --no-daemon
+
+      - name: Upload jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: combatfx-jar
+          path: |
+            build/libs/*.jar
+            !build/libs/*-sources.jar
