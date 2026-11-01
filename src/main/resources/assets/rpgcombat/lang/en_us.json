@@ -54,5 +54,22 @@
   "rpgcombat.info.commands": "Commands: /rpghud ...   /combatfx gui|toggle|reset",
   "rpgcombat.cmd.on": "CombatFX ON",
   "rpgcombat.cmd.off": "CombatFX OFF",
-  "rpgcombat.cmd.reset": "CombatFX reset to defaults"
+  "rpgcombat.cmd.reset": "CombatFX reset to defaults",
+  "rpgcombat.tab.extras": "Extras",
+  "rpgcombat.opt.break_enable": "Break progress",
+  "rpgcombat.opt.pickup_enable": "Pickup popups",
+  "rpgcombat.opt.break_style": "Bar style: %s",
+  "rpgcombat.style.linear": "Linear",
+  "rpgcombat.style.circular": "Circular",
+  "rpgcombat.opt.break_percent": "Show percent",
+  "rpgcombat.opt.break_color": "Color by progress",
+  "rpgcombat.opt.break_size": "Bar size",
+  "rpgcombat.opt.pickup_enchants": "Enchant details",
+  "rpgcombat.opt.pickup_durability": "Durability",
+  "rpgcombat.opt.pickup_time": "Popup time",
+  "rpgcombat.opt.pickup_max": "Max visible",
+  "rpgcombat.opt.pickup_scale": "Popup size",
+  "rpgcombat.opt.pickup_x": "Margin right",
+  "rpgcombat.opt.pickup_y": "Popup Y",
+  "rpgcombat.opt.pickup_merge": "Merge same items"
 }

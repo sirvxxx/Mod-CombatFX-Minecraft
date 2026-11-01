@@ -3,6 +3,7 @@ package dev.rpgcombat.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.combatfx.CombatConfig;
+import dev.rpgcombat.extras.ExtrasConfig;
 import dev.rpghud.HudConfig;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,6 +25,7 @@ public final class ModConfig {
 	public int configVersion = 1;
 	public HudConfig hud = new HudConfig();
 	public CombatConfig combat = new CombatConfig();
+	public ExtrasConfig extras = new ExtrasConfig();
 
 	private ModConfig() {}
 
@@ -45,8 +47,10 @@ public final class ModConfig {
 		}
 		if (instance.hud == null) instance.hud = new HudConfig();
 		if (instance.combat == null) instance.combat = new CombatConfig();
+		if (instance.extras == null) instance.extras = new ExtrasConfig();
 		instance.hud.sanitize();
 		instance.combat.sanitize();
+		instance.extras.sanitize();
 		save();
 	}
 
@@ -61,6 +65,7 @@ public final class ModConfig {
 	public static void resetAll() {
 		instance.hud = new HudConfig();
 		instance.combat = new CombatConfig();
+		instance.extras = new ExtrasConfig();
 		save();
 	}
 }

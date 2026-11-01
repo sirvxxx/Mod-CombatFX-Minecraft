@@ -2,6 +2,7 @@ package dev.rpgcombat.gui;
 
 import dev.combatfx.CombatConfig;
 import dev.rpgcombat.config.ModConfig;
+import dev.rpgcombat.extras.ExtrasConfig;
 import dev.rpghud.HudConfig;
 import dev.rpghud.HudDraw;
 import dev.rpghud.HudEditScreen;
@@ -39,6 +40,7 @@ public class SettingsScreen extends Screen {
 		HUD("rpgcombat.tab.hud"),
 		ELEMENTS("rpgcombat.tab.elements"),
 		COMBAT("rpgcombat.tab.combat"),
+		EXTRAS("rpgcombat.tab.extras"),
 		COLORS("rpgcombat.tab.colors");
 
 		final String key;
@@ -132,6 +134,7 @@ public class SettingsScreen extends Screen {
 			case HUD -> buildHud();
 			case ELEMENTS -> buildElements();
 			case COMBAT -> buildCombat();
+			case EXTRAS -> buildExtras();
 			case COLORS -> buildColors();
 		}
 	}
@@ -281,6 +284,44 @@ public class SettingsScreen extends Screen {
 			CombatConfig.reset();
 			this.rebuildWidgets();
 		});
+	}
+
+	private void buildExtras() {
+		toggle(0, 0, "rpgcombat.opt.break_enable", () -> ExtrasConfig.get().breakEnabled, v -> ExtrasConfig.get().breakEnabled = v);
+		toggle(1, 0, "rpgcombat.opt.pickup_enable", () -> ExtrasConfig.get().pickupEnabled, v -> ExtrasConfig.get().pickupEnabled = v);
+
+		button(0, 1, 1, breakStyleText(), b -> {
+			ExtrasConfig e = ExtrasConfig.get();
+			e.breakStyle = e.breakStyle == 1 ? 0 : 1;
+			ModConfig.save();
+			b.setMessage(breakStyleText());
+		});
+		toggle(1, 1, "rpgcombat.opt.break_percent", () -> ExtrasConfig.get().breakShowPercent, v -> ExtrasConfig.get().breakShowPercent = v);
+
+		toggle(0, 2, "rpgcombat.opt.break_color", () -> ExtrasConfig.get().breakColorByProgress, v -> ExtrasConfig.get().breakColorByProgress = v);
+		slider(1, 2, 1, "rpgcombat.opt.break_size", 0.5, () -> 2.0, 0.05, "%.2f",
+				() -> ExtrasConfig.get().breakScale, v -> ExtrasConfig.get().breakScale = (float) v);
+
+		toggle(0, 3, "rpgcombat.opt.pickup_enchants", () -> ExtrasConfig.get().pickupEnchants, v -> ExtrasConfig.get().pickupEnchants = v);
+		toggle(1, 3, "rpgcombat.opt.pickup_durability", () -> ExtrasConfig.get().pickupDurability, v -> ExtrasConfig.get().pickupDurability = v);
+
+		slider(0, 4, 1, "rpgcombat.opt.pickup_time", 1000, () -> 8000.0, 100, "%.0f ms",
+				() -> ExtrasConfig.get().pickupDurationMs, v -> ExtrasConfig.get().pickupDurationMs = (int) Math.round(v));
+		slider(1, 4, 1, "rpgcombat.opt.pickup_max", 1, () -> 10.0, 1, "%.0f",
+				() -> ExtrasConfig.get().pickupMaxVisible, v -> ExtrasConfig.get().pickupMaxVisible = (int) Math.round(v));
+		slider(0, 5, 1, "rpgcombat.opt.pickup_scale", 0.6, () -> 1.6, 0.05, "%.2f",
+				() -> ExtrasConfig.get().pickupScale, v -> ExtrasConfig.get().pickupScale = (float) v);
+		slider(1, 5, 1, "rpgcombat.opt.pickup_x", 0, () -> 120.0, 2, "%.0f",
+				() -> ExtrasConfig.get().pickupMarginRight, v -> ExtrasConfig.get().pickupMarginRight = (int) Math.round(v));
+		slider(0, 6, 1, "rpgcombat.opt.pickup_y", -150, () -> 150.0, 2, "%.0f",
+				() -> ExtrasConfig.get().pickupOffsetY, v -> ExtrasConfig.get().pickupOffsetY = (int) Math.round(v));
+		toggle(1, 6, "rpgcombat.opt.pickup_merge", () -> ExtrasConfig.get().pickupMergeSame, v -> ExtrasConfig.get().pickupMergeSame = v);
+	}
+
+	private static Component breakStyleText() {
+		boolean circular = ExtrasConfig.get().breakStyle == 1;
+		return Component.translatable("rpgcombat.opt.break_style",
+				Component.translatable(circular ? "rpgcombat.style.circular" : "rpgcombat.style.linear"));
 	}
 
 	private void buildColors() {

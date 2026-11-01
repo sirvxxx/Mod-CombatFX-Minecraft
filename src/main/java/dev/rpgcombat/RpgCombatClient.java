@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import dev.combatfx.combat.HitTracker;
 import dev.combatfx.render.CombatHud;
 import dev.rpgcombat.config.ModConfig;
+import dev.rpgcombat.extras.Extras;
 import dev.rpgcombat.gui.SettingsScreen;
 import dev.rpghud.HudCommands;
 import dev.rpghud.HudConfig;
@@ -54,7 +55,12 @@ public final class RpgCombatClient implements ClientModInitializer {
 		HudElementRegistry.attachElementAfter(VanillaHudElements.CROSSHAIR,
 				Identifier.fromNamespaceAndPath(MOD_ID, "combat_fx"), CombatHud::extract);
 
-		// 3) tombol pintas: H = menu master, J = edit mode HUD
+		// 3) modul Extras: bar hancur blok + popup item pickup
+		ClientTickEvents.END_CLIENT_TICK.register(Extras::onTick);
+		HudElementRegistry.attachElementAfter(VanillaHudElements.CROSSHAIR,
+				Identifier.fromNamespaceAndPath(MOD_ID, "extras"), Extras::extract);
+
+		// 4) tombol pintas: H = menu master, J = edit mode HUD
 		KeyMapping.Category category = KeyMapping.Category.register(
 				Identifier.fromNamespaceAndPath(MOD_ID, "main"));
 		openKey = KeyMappingHelper.registerKeyMapping(
@@ -83,7 +89,7 @@ public final class RpgCombatClient implements ClientModInitializer {
 			}
 		});
 
-		// 4) command: /rpghud ... dan /combatfx ...
+		// 5) command: /rpghud ... dan /combatfx ...
 		HudCommands.register();
 		CombatCommands.register();
 	}

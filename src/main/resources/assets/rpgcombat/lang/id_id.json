@@ -54,5 +54,22 @@
   "rpgcombat.info.commands": "Perintah: /rpghud ...   /combatfx gui|toggle|reset",
   "rpgcombat.cmd.on": "CombatFX AKTIF",
   "rpgcombat.cmd.off": "CombatFX MATI",
-  "rpgcombat.cmd.reset": "CombatFX dikembalikan ke default"
+  "rpgcombat.cmd.reset": "CombatFX dikembalikan ke default",
+  "rpgcombat.tab.extras": "Extras",
+  "rpgcombat.opt.break_enable": "Progress hancur blok",
+  "rpgcombat.opt.pickup_enable": "Popup item masuk",
+  "rpgcombat.opt.break_style": "Gaya bar: %s",
+  "rpgcombat.style.linear": "Linear",
+  "rpgcombat.style.circular": "Melingkar",
+  "rpgcombat.opt.break_percent": "Tampilkan persen",
+  "rpgcombat.opt.break_color": "Warna sesuai progres",
+  "rpgcombat.opt.break_size": "Ukuran bar",
+  "rpgcombat.opt.pickup_enchants": "Detail enchant",
+  "rpgcombat.opt.pickup_durability": "Durability",
+  "rpgcombat.opt.pickup_time": "Lama popup",
+  "rpgcombat.opt.pickup_max": "Maks tampil",
+  "rpgcombat.opt.pickup_scale": "Ukuran popup",
+  "rpgcombat.opt.pickup_x": "Jarak kanan",
+  "rpgcombat.opt.pickup_y": "Popup Y",
+  "rpgcombat.opt.pickup_merge": "Gabung item sama"
 }
