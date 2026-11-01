@@ -5,7 +5,6 @@ import dev.rpgcombat.gui.SettingsScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -28,32 +27,32 @@ extends Screen {
         int total = 6 * bw + 5 * gap;
         int x = (this.width - total) / 2;
         int y = this.height - 30 + 5;
-        this.addRenderableWidget((GuiEventListener)Button.builder((Component)Component.translatable((String)"custom_rpg_hud.edit.scale_minus"), b -> {
+        this.addRenderableWidget(Button.builder((Component)Component.translatable((String)"custom_rpg_hud.edit.scale_minus"), b -> {
             HudConfig c = HudConfig.get();
             c.scale = Math.max(0.5f, (float)Math.round((c.scale - 0.1f) * 10.0f) / 10.0f);
             this.clampPos();
         }).bounds(x, y, bw, 20).build());
-        this.addRenderableWidget((GuiEventListener)Button.builder((Component)Component.translatable((String)"custom_rpg_hud.edit.scale_plus"), b -> {
+        this.addRenderableWidget(Button.builder((Component)Component.translatable((String)"custom_rpg_hud.edit.scale_plus"), b -> {
             HudConfig c = HudConfig.get();
             c.scale = Math.min(3.0f, (float)Math.round((c.scale + 0.1f) * 10.0f) / 10.0f);
             this.clampPos();
         }).bounds(x + (bw + gap), y, bw, 20).build());
-        this.addRenderableWidget((GuiEventListener)Button.builder((Component)Component.translatable((String)"custom_rpg_hud.edit.center"), b -> {
+        this.addRenderableWidget(Button.builder((Component)Component.translatable((String)"custom_rpg_hud.edit.center"), b -> {
             HudConfig c = HudConfig.get();
             c.x = Math.max(0, (this.width - this.hudW()) / 2);
             c.y = Math.max(0, (this.height - this.hudH()) / 2);
         }).bounds(x + 2 * (bw + gap), y, bw, 20).build());
-        this.addRenderableWidget((GuiEventListener)Button.builder((Component)Component.translatable((String)"custom_rpg_hud.edit.reset_pos"), b -> {
+        this.addRenderableWidget(Button.builder((Component)Component.translatable((String)"custom_rpg_hud.edit.reset_pos"), b -> {
             HudConfig c = HudConfig.get();
             c.x = 8;
             c.y = 8;
             this.clampPos();
         }).bounds(x + 3 * (bw + gap), y, bw, 20).build());
-        this.addRenderableWidget((GuiEventListener)Button.builder((Component)Component.translatable((String)"custom_rpg_hud.edit.settings"), b -> {
+        this.addRenderableWidget(Button.builder((Component)Component.translatable((String)"custom_rpg_hud.edit.settings"), b -> {
             HudConfig.save();
             McCompat.openScreen(new SettingsScreen());
         }).bounds(x + 4 * (bw + gap), y, bw, 20).build());
-        this.addRenderableWidget((GuiEventListener)Button.builder((Component)Component.translatable((String)"custom_rpg_hud.config.done"), b -> this.onClose()).bounds(x + 5 * (bw + gap), y, bw, 20).build());
+        this.addRenderableWidget(Button.builder((Component)Component.translatable((String)"custom_rpg_hud.config.done"), b -> this.onClose()).bounds(x + 5 * (bw + gap), y, bw, 20).build());
     }
 
     private int hudW() {

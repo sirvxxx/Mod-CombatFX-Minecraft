@@ -222,10 +222,9 @@ final class CircleLayout {
         int runX1 = 0;
         int runCol = 0;
         for (int i = 0; i < bandCount; ++i) {
-            boolean on;
             int sec = bandSec[i];
             int col = 0;
-            boolean bl = sec == 0 ? showHp : (on = sec == 1 ? showFood : showArmor);
+            boolean on = sec == 0 ? showHp : (sec == 1 ? showFood : showArmor);
             if (!on) {
                 col = t.bandBack;
             } else {

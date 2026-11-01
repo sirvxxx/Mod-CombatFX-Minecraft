@@ -45,8 +45,7 @@ final class BarLayout {
     }
 
     private static int topHeight(HudConfig c) {
-        int left;
-        int n = c.showFace ? (c.showLevel ? 60 : 40) : (left = 0);
+        int left = c.showFace ? (c.showLevel ? 60 : 40) : 0;
         int panel = BarLayout.panelVisible(c) ? (c.showFace ? 4 : 0) + 52 : 0;
         return Math.max(left, panel);
     }
