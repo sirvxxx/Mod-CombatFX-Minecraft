@@ -1,13 +1,21 @@
-# RPG Combat HUD (single jar)
+# COMBATFX RPG
 
-Gabungan **Custom RPG HUD** (`dev.rpghud`) dan **CombatFX** (`dev.combatfx`) untuk Fabric, Minecraft 26.2.
+A lightweight client-side HUD overhaul for Minecraft designed for RPG enthusiasts.
+Fabric, Minecraft 26.1.2 / 26.2 (build matrix di `.github/workflows/build.yml`).
 
-- `H` : menu pengaturan master  |  `J` : mode edit HUD (drag & drop)
-- Config tunggal: `.minecraft/config/rpgcombat.json` (seksi `hud` dan `combat`)
-- Config HUD lama `custom_rpg_hud.json` diimpor otomatis sekali kalau `rpgcombat.json` belum ada
-- Extras: bar progress hancur blok (linear/circular + persen) dan popup item pickup (antrean, detail enchant, durability)
-- Command: `/rpghud ...`, `/combatfx gui|toggle|reset`
+## Modul
+- **RPG HUD** (`dev.rpghud`): bar horizontal / lingkaran, 6 tema warna + tema Auto dari resource pack
+- **CombatFX** (`dev.combatfx`): angka damage melayang, combo counter, critical hit
+- **Extras** (`dev.rpgcombat.extras`): bar progress hancur blok (monokrom), popup item pickup (ikon + enchant + durability), nama item hotbar
+- **Menu** (`dev.rpgcombat.gui`): `SettingsScreen` (tombol `H`) dan `HudCustomizerScreen` (tombol `J`, drag & drop)
 
-Build: JDK 25 + Gradle 9.4+, jalankan `gradle build`. Atau pakai `.github/workflows/build.yml`.
+## Config
+Satu file: `.minecraft/config/rpgcombat.json` (seksi `hud`, `combat`, `extras`). Posisi dan skala setiap elemen
+tersimpan otomatis saat mouse dilepas di mode edit.
 
-Catatan: kode `dev.rpghud` berasal dari decompile jar custom-rpg-hud 3.0.0 (CFR), lalu dirapikan.
+## Build
+JDK 25 + Gradle 9.4+: `gradle build`. Hasil: `build/libs/combatfx-rpg-<versi>+mc<mc>.jar`.
+Untuk versi lain: `gradle build -Pminecraft_version=26.1.2 -Pfabric_version=<versi fabric api>`.
+
+## Command
+`/rpghud ...`, `/combatfx gui|toggle|reset`

@@ -53,5 +53,6 @@
   "custom_rpg_hud.layout.circle": "Circle",
   "custom_rpg_hud.layout.bar": "Bar",
   "custom_rpg_hud.cmd.type": "RPG HUD type: %s",
-  "custom_rpg_hud.cmd.type_unknown": "Unknown type. Use: circle or bar"
+  "custom_rpg_hud.cmd.type_unknown": "Unknown type. Use: circle or bar",
+  "custom_rpg_hud.theme.auto": "Auto (Resource Pack)"
 }

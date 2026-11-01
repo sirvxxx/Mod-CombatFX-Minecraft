@@ -3,9 +3,9 @@ package dev.rpgcombat.gui;
 import dev.combatfx.CombatConfig;
 import dev.rpgcombat.config.ModConfig;
 import dev.rpgcombat.extras.ExtrasConfig;
+import dev.rpgcombat.theme.PackTheme;
 import dev.rpghud.HudConfig;
 import dev.rpghud.HudDraw;
-import dev.rpghud.HudEditScreen;
 import dev.rpghud.HudRenderer;
 import dev.rpghud.HudTheme;
 import dev.rpghud.McCompat;
@@ -19,6 +19,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
@@ -170,7 +171,7 @@ public class SettingsScreen extends Screen {
 
 		button(0, 1, 1, tr("rpgcombat.btn.edit_mode"), b -> {
 			ModConfig.save();
-			McCompat.openScreen(new HudEditScreen());
+			McCompat.openScreen(new HudCustomizerScreen());
 		});
 		button(1, 1, 1, tr("rpgcombat.btn.reset_hud_pos"), b -> {
 			HudConfig c = HudConfig.get();
@@ -230,7 +231,7 @@ public class SettingsScreen extends Screen {
 
 		button(1, 2, 1, tr("rpgcombat.btn.edit_mode"), b -> {
 			ModConfig.save();
-			McCompat.openScreen(new HudEditScreen());
+			McCompat.openScreen(new HudCustomizerScreen());
 		});
 		button(0, 3, 1, tr("rpgcombat.btn.center"), b -> {
 			HudConfig c = HudConfig.get();
@@ -298,7 +299,7 @@ public class SettingsScreen extends Screen {
 		});
 		toggle(1, 1, "rpgcombat.opt.break_percent", () -> ExtrasConfig.get().breakShowPercent, v -> ExtrasConfig.get().breakShowPercent = v);
 
-		toggle(0, 2, "rpgcombat.opt.break_color", () -> ExtrasConfig.get().breakColorByProgress, v -> ExtrasConfig.get().breakColorByProgress = v);
+		toggle(0, 2, "rpgcombat.opt.hotbar_name", () -> ExtrasConfig.get().hotbarNameEnabled, v -> ExtrasConfig.get().hotbarNameEnabled = v);
 		slider(1, 2, 1, "rpgcombat.opt.break_size", 0.5, () -> 2.0, 0.05, "%.2f",
 				() -> ExtrasConfig.get().breakScale, v -> ExtrasConfig.get().breakScale = (float) v);
 
@@ -349,9 +350,15 @@ public class SettingsScreen extends Screen {
 			swatches.add(new Swatch(x + 26, y + 6, 8, 8, th.armor));
 			if (th.id.equals(hc.theme)) outlines.add(new Cell(x, y, w, 20));
 		}
+		// tema "auto" mengambil gaya dari resource pack aktif; tombol ini membaca ulang pack
+		button(1, 3, 1, tr("rpgcombat.btn.refresh_theme"), b -> {
+			PackTheme.refresh(Minecraft.getInstance());
+			ModConfig.save();
+		});
+		swatches.add(new Swatch(colX(0) + 38, rowY(3) + 6, 8, 8, 0xFF000000 | PackTheme.baseRgb()));
 
 		// --- warna angka damage CombatFX ---
-		int headerY = cy + 14 + 3 * ROW + 4;
+		int headerY = cy + 14 + 4 * ROW + 4;
 		labels.add(new Label(cx, headerY, tr("rpgcombat.section.combat_colors").getString(), acc));
 		yBase = headerY + 13;
 		colorButton(0, 0, "rpgcombat.color.normal", () -> CombatConfig.get().colorNormal, v -> CombatConfig.get().colorNormal = v);
@@ -475,8 +482,10 @@ public class SettingsScreen extends Screen {
 		int accent = theme.text;
 
 		// ---- 1) latar panel + latar baris (di bawah widget) ----
-		g.fill(px, py, px + SIDE_W, py + ph, 0xE60A1018);
-		g.fill(px + SIDE_W + 4, py, px + pw, py + ph, 0xE60D141C);
+		int fillSide = theme.auto ? PackTheme.menuFill() : 0xE60A1018;
+		int fillMain = theme.auto ? PackTheme.menuFill() : 0xE60D141C;
+		g.fill(px, py, px + SIDE_W, py + ph, fillSide);
+		g.fill(px + SIDE_W + 4, py, px + pw, py + ph, fillMain);
 		for (Cell c : cells) {
 			g.fill(c.x(), c.y(), c.x() + c.w(), c.y() + c.h(), 0x66000000);
 			g.fill(c.x(), c.y(), c.x() + 2, c.y() + c.h(), accent);
@@ -486,8 +495,8 @@ public class SettingsScreen extends Screen {
 		super.extractRenderState(g, mouseX, mouseY, delta);
 
 		// ---- 3) bingkai logam bertema (hanya tepi, tidak menutup widget) ----
-		HudDraw.border(g, theme.frame, 20, 20, 5, px, py, SIDE_W, ph);
-		HudDraw.border(g, theme.frame, 20, 20, 5, px + SIDE_W + 4, py, pw - SIDE_W - 4, ph);
+		HudDraw.panelBorder(g, theme, px, py, SIDE_W, ph);
+		HudDraw.panelBorder(g, theme, px + SIDE_W + 4, py, pw - SIDE_W - 4, ph);
 
 		// judul sidebar + judul konten
 		String side = tr("rpgcombat.title").getString();

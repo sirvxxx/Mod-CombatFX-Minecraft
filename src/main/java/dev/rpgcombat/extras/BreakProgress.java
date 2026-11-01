@@ -90,6 +90,11 @@ public final class BreakProgress {
 	}
 
 	// -------------------------------------------------------------- render
+	// Warna TETAP monokrom: trek abu-abu, isi putih. Tidak ada gradasi / pergantian warna.
+	private static final int TRACK = 0x4A4A4A;
+	private static final int FILL = 0xFFFFFF;
+	private static final int FILL_SHADE = 0xCFCFCF;
+
 	public static void render(GuiGraphicsExtractor g, Minecraft mc, ExtrasConfig cfg, float dt) {
 		// smoothing berbasis delta time
 		if (active) {
@@ -106,49 +111,46 @@ public final class BreakProgress {
 		if (alpha <= 0.01f) return;
 
 		var window = mc.getWindow();
-		int cx = window.getGuiScaledWidth() / 2;
+		int cx = window.getGuiScaledWidth() / 2 + cfg.breakOffsetX;
 		int cy = window.getGuiScaledHeight() / 2;
 		float p = Fx.clamp01(shown);
-		int rgb = cfg.breakColorByProgress ? progressColor(p) : 0xFFFFFF;
 
 		if (cfg.breakStyle == 1) {
-			drawCircular(g, mc, cfg, cx, cy, p, rgb);
+			drawCircular(g, mc, cfg, cx, cy, p);
 		} else {
-			drawLinear(g, mc, cfg, cx, cy, p, rgb);
+			drawLinear(g, mc, cfg, cx, cy, p);
 		}
 	}
 
-	private static void drawLinear(GuiGraphicsExtractor g, Minecraft mc, ExtrasConfig cfg,
-			int cx, int cy, float p, int rgb) {
+	private static void drawLinear(GuiGraphicsExtractor g, Minecraft mc, ExtrasConfig cfg, int cx, int cy, float p) {
 		int w = Math.max(20, Math.round(44 * cfg.breakScale));
 		int h = Math.max(2, Math.round(3 * cfg.breakScale));
 		int x0 = cx - w / 2;
 		int y0 = cy + cfg.breakOffsetY;
 		int filled = Math.round(w * p);
 
-		g.fill(x0 - 1, y0 - 1, x0 + w + 1, y0 + h + 1, Fx.argb(alpha * 0.55f, 0x000000));
-		g.fill(x0, y0, x0 + w, y0 + h, Fx.argb(alpha * 0.55f, 0x3A3F4A));
+		g.fill(x0 - 1, y0 - 1, x0 + w + 1, y0 + h + 1, Fx.argb(alpha * 0.60f, 0x000000));
+		g.fill(x0, y0, x0 + w, y0 + h, Fx.argb(alpha * 0.85f, TRACK));
 		if (filled > 0) {
-			g.fill(x0, y0, x0 + filled, y0 + h, Fx.argb(alpha, rgb));
-			g.fill(x0, y0, x0 + filled, y0 + 1, Fx.argb(alpha, Fx.lerpColor(rgb, 0xFFFFFF, 0.5f)));
+			g.fill(x0, y0, x0 + filled, y0 + h, Fx.argb(alpha, FILL));
+			if (h >= 3) g.fill(x0, y0 + h - 1, x0 + filled, y0 + h, Fx.argb(alpha, FILL_SHADE));
 		}
 		if (cfg.breakShowPercent) {
 			drawPercent(g, mc, cfg, cx, y0 + h + 3, p);
 		}
 	}
 
-	private static void drawCircular(GuiGraphicsExtractor g, Minecraft mc, ExtrasConfig cfg,
-			int cx, int cy, float p, int rgb) {
+	private static void drawCircular(GuiGraphicsExtractor g, Minecraft mc, ExtrasConfig cfg, int cx, int cy, float p) {
 		int r = Math.max(8, Math.round(13 * cfg.breakScale));
 		if (r != ringR) buildRing(r);
 		int t = Math.max(2, Math.round(2 * cfg.breakScale));
 
-		int bg = Fx.argb(alpha * 0.45f, 0x20242C);
+		int bg = Fx.argb(alpha * 0.70f, TRACK);
 		for (int i = 0; i < RING_N; i++) {
 			g.fill(cx + RING_X[i], cy + RING_Y[i], cx + RING_X[i] + t, cy + RING_Y[i] + t, bg);
 		}
 		int k = Math.round(RING_N * p);
-		int fg = Fx.argb(alpha, rgb);
+		int fg = Fx.argb(alpha, FILL);
 		for (int i = 0; i < k; i++) {
 			g.fill(cx + RING_X[i], cy + RING_Y[i], cx + RING_X[i] + t, cy + RING_Y[i] + t, fg);
 		}
@@ -157,15 +159,14 @@ public final class BreakProgress {
 		}
 	}
 
-	private static void drawPercent(GuiGraphicsExtractor g, Minecraft mc, ExtrasConfig cfg,
-			int cx, int y, float p) {
+	private static void drawPercent(GuiGraphicsExtractor g, Minecraft mc, ExtrasConfig cfg, int cx, int y, float p) {
 		String s = Math.round(p * 100f) + "%";
 		Font font = mc.font;
 		float sc = 0.8f * cfg.breakScale;
 		g.pose().pushMatrix();
 		g.pose().translate(cx, y);
 		g.pose().scale(sc, sc);
-		g.text(font, s, -font.width(s) / 2, 0, Fx.argb(alpha, 0xFFFFFF), true);
+		g.text(font, s, -font.width(s) / 2, 0, Fx.argb(alpha, FILL), true);
 		g.pose().popMatrix();
 	}
 
@@ -177,12 +178,5 @@ public final class BreakProgress {
 			RING_X[i] = (int) Math.round(Math.sin(a) * r) - 1;
 			RING_Y[i] = (int) Math.round(-Math.cos(a) * r) - 1;
 		}
-	}
-
-	/** merah-oranye -> kuning -> hijau */
-	private static int progressColor(float p) {
-		return p < 0.5f
-				? Fx.lerpColor(0xFF5A3C, 0xFFE066, p * 2f)
-				: Fx.lerpColor(0xFFE066, 0x55FF55, (p - 0.5f) * 2f);
 	}
 }

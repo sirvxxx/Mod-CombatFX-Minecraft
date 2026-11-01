@@ -1,5 +1,6 @@
 package dev.rpghud;
 
+import dev.rpgcombat.theme.PackTheme;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -12,12 +13,20 @@ public final class HudDraw {
     }
 
     public static void frame(GuiGraphicsExtractor g, HudTheme t, int x, int y, int w, int h) {
+        if (t.auto) {
+            PackTheme.panel(g, x, y, w, h);
+            return;
+        }
         g.fill(x + 1, y + 1, x + w + 3, y + h + 3, 0x22000000);
         g.fill(x + 2, y + 3, x + w + 2, y + h + 2, 0x44000000);
         HudDraw.slice(g, t.frame, 20, 20, 5, x, y, w, h);
     }
 
     public static void badge(GuiGraphicsExtractor g, HudTheme t, int x, int y, int w, int h) {
+        if (t.auto) {
+            PackTheme.panel(g, x, y, w, h);
+            return;
+        }
         g.fill(x + 1, y + 2, x + w + 1, y + h + 2, 0x55000000);
         HudDraw.slice(g, t.badge, 16, 16, 4, x, y, w, h);
     }
@@ -64,6 +73,15 @@ public final class HudDraw {
             s = s.substring(0, s.length() - 1);
         }
         return s;
+    }
+
+    /** Bingkai panel untuk menu: tema "auto" mengambil tepi dari resource pack aktif. */
+    public static void panelBorder(GuiGraphicsExtractor g, HudTheme t, int x, int y, int w, int h) {
+        if (t.auto) {
+            PackTheme.border(g, x, y, w, h);
+        } else {
+            HudDraw.border(g, t.frame, 20, 20, 5, x, y, w, h);
+        }
     }
 
     /** Seperti slice(), tapi hanya bingkai (4 sudut + 4 sisi), bagian tengah tidak digambar. */

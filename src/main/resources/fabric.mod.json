@@ -2,17 +2,18 @@
   "schemaVersion": 1,
   "id": "rpgcombat",
   "version": "${version}",
-  "name": "RPG Combat HUD",
-  "description": "Custom RPG HUD + CombatFX (floating damage, combo counter, crit) dengan satu menu pengaturan dan satu file config.",
+  "name": "COMBATFX RPG",
+  "description": "A lightweight client-side HUD overhaul for Minecraft designed for RPG enthusiasts.",
   "authors": ["V"],
   "license": "MIT",
+  "icon": "assets/rpgcombat/icon.png",
   "environment": "client",
   "entrypoints": {
     "client": ["dev.rpgcombat.RpgCombatClient"]
   },
   "depends": {
     "fabricloader": ">=0.19.3",
-    "minecraft": "~26.2",
+    "minecraft": ">=26.1.2",
     "java": ">=25",
     "fabric-api": "*"
   }

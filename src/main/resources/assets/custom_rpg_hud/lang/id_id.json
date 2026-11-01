@@ -53,5 +53,6 @@
   "custom_rpg_hud.layout.circle": "Lingkaran",
   "custom_rpg_hud.layout.bar": "Bar",
   "custom_rpg_hud.cmd.type": "Tipe RPG HUD: %s",
-  "custom_rpg_hud.cmd.type_unknown": "Tipe tidak dikenal. Pakai: circle atau bar"
+  "custom_rpg_hud.cmd.type_unknown": "Tipe tidak dikenal. Pakai: circle atau bar",
+  "custom_rpg_hud.theme.auto": "Otomatis (Resource Pack)"
 }

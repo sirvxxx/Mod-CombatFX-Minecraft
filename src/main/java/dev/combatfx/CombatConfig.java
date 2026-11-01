@@ -46,8 +46,8 @@ public class CombatConfig {
 		comboScale = Math.max(0.5f, Math.min(2.0f, comboScale));
 		heavyDamage = Math.max(1.0f, Math.min(100.0f, heavyDamage));
 		comboTimeoutMs = Math.max(300, Math.min(10000, comboTimeoutMs));
-		comboOffsetX = Math.max(-400, Math.min(400, comboOffsetX));
-		comboOffsetY = Math.max(-300, Math.min(300, comboOffsetY));
+		comboOffsetX = Math.max(-1500, Math.min(1500, comboOffsetX));
+		comboOffsetY = Math.max(-900, Math.min(900, comboOffsetY));
 		colorNormal &= 0xFFFFFF;
 		colorHeavy &= 0xFFFFFF;
 		colorCrit &= 0xFFFFFF;

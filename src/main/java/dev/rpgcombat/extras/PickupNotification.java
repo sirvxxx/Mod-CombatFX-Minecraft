@@ -15,10 +15,12 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
  * Satu popup. Semua teks dan lebar dihitung SEKALI saat dibuat,
  * jadi menggambarnya per frame murah (tanpa string/format baru).
  *
- * Titik asal gambar (0,0) = pojok kanan-atas blok; x negatif = ke kiri (rata kanan).
+ * Titik asal gambar (0,0) = pojok kanan-atas blok; blok digambar ke kiri (x negatif).
+ * Susunan: [ikon item] [+N Nama] / durability / chip enchant (rata kiri di samping ikon).
  */
 final class PickupNotification {
 	static final int LINE = 10;
+	private static final int ICON_GAP = 4;
 	private static final int MAX_CHIPS = 8;
 	private static final int COLS = 2;
 	private static final int CHIP_GAP = 10;
@@ -53,6 +55,7 @@ final class PickupNotification {
 
 	int width;
 	int height;
+	private int contentW;
 
 	// state animasi (dikelola PickupManager)
 	long popMs;
@@ -146,12 +149,13 @@ final class PickupNotification {
 		int w = countW + 4 + nameW;
 		if (hasDur) w = Math.max(w, Math.max(durStrW, 70));
 		for (int r = 0; r < rowCount; r++) w = Math.max(w, rowW[r]);
-		this.width = w;
+		this.contentW = w;
+		this.width = ItemIcon.SIZE + ICON_GAP + w;
 
 		int h = LINE;
 		if (hasDur) h += 13;
 		h += rowCount * (LINE + 1);
-		this.height = h;
+		this.height = Math.max(ItemIcon.SIZE, h);
 	}
 
 	void start(long now, int durationMs) {
@@ -162,37 +166,40 @@ final class PickupNotification {
 
 	// ---------------------------------------------------------------- draw
 	void draw(GuiGraphicsExtractor g, Font font, float alpha) {
+		int left = -width;
+		ItemIcon.draw(g, sample, left, 0, alpha);
+
+		int cx = left + ItemIcon.SIZE + ICON_GAP;
 		int y0 = 0;
 
 		// "+3 Nama Item"
-		int lineW = countW + 4 + nameW;
-		g.text(font, countStr, -lineW, y0, Fx.argb(alpha, 0x55FF55), true);
-		g.text(font, nameStr, -nameW, y0, Fx.argb(alpha, nameRgb), true);
+		g.text(font, countStr, cx, y0, Fx.argb(alpha, 0x55FF55), true);
+		g.text(font, nameStr, cx + countW + 4, y0, Fx.argb(alpha, nameRgb), true);
 		y0 += LINE;
 
 		if (hasDur) {
-			g.text(font, durStr, -durStrW, y0, Fx.argb(alpha * 0.85f, 0xC8D0DC), true);
+			g.text(font, durStr, cx, y0, Fx.argb(alpha * 0.85f, 0xC8D0DC), true);
 			y0 += 10;
 			int bw = Math.max(durStrW, 70);
-			g.fill(-bw, y0, 0, y0 + 2, Fx.argb(alpha * 0.6f, 0x20242C));
+			g.fill(cx, y0, cx + bw, y0 + 2, Fx.argb(alpha * 0.6f, 0x20242C));
 			int filled = Math.round(bw * durFrac);
 			if (filled > 0) {
-				g.fill(-bw, y0, -bw + filled, y0 + 2,
+				g.fill(cx, y0, cx + filled, y0 + 2,
 						Fx.argb(alpha, Fx.lerpColor(0xFF4040, 0x55FF55, durFrac)));
 			}
 			y0 += 3;
 		}
 
-		// enchantment: sub-teks di bawah nama
+		// enchantment: sub-teks tepat di bawah nama
 		for (int i = 0; i < chipN; i++) {
 			int r = chipRow[i];
-			int cx = -rowW[r] + chipX[i];
-			int cy = y0 + r * (LINE + 1);
-			g.text(font, chipName[i], cx, cy, Fx.argb(alpha, 0xCFD8E6), true);
+			int x = cx + chipX[i];
+			int y = y0 + r * (LINE + 1);
+			g.text(font, chipName[i], x, y, Fx.argb(alpha, 0xCFD8E6), true);
 			if (chipHasBadge[i]) {
-				int bx = cx + chipNameW[i] + 3;
-				g.fill(bx, cy - 1, bx + chipLvlW[i] + 4, cy + 9, Fx.argb(alpha * 0.9f, chipBadge[i]));
-				g.text(font, chipLvl[i], bx + 2, cy, Fx.argb(alpha, 0xFFFFFF), false);
+				int bx = x + chipNameW[i] + 3;
+				g.fill(bx, y - 1, bx + chipLvlW[i] + 4, y + 9, Fx.argb(alpha * 0.9f, chipBadge[i]));
+				g.text(font, chipLvl[i], bx + 2, y, Fx.argb(alpha, 0xFFFFFF), false);
 			}
 		}
 	}

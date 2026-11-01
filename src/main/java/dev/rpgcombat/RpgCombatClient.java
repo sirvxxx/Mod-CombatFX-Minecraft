@@ -5,10 +5,13 @@ import dev.combatfx.combat.HitTracker;
 import dev.combatfx.render.CombatHud;
 import dev.rpgcombat.config.ModConfig;
 import dev.rpgcombat.extras.Extras;
+import dev.rpgcombat.extras.ExtrasConfig;
+import dev.rpgcombat.extras.HotbarName;
+import dev.rpgcombat.gui.HudCustomizerScreen;
+import dev.rpgcombat.theme.PackTheme;
 import dev.rpgcombat.gui.SettingsScreen;
 import dev.rpghud.HudCommands;
 import dev.rpghud.HudConfig;
-import dev.rpghud.HudEditScreen;
 import dev.rpghud.HudRenderer;
 import dev.rpghud.McCompat;
 import net.fabricmc.api.ClientModInitializer;
@@ -57,6 +60,7 @@ public final class RpgCombatClient implements ClientModInitializer {
 
 		// 3) modul Extras: bar hancur blok + popup item pickup
 		ClientTickEvents.END_CLIENT_TICK.register(Extras::onTick);
+		hideVanillaHeldItemTooltip();
 		HudElementRegistry.attachElementAfter(VanillaHudElements.CROSSHAIR,
 				Identifier.fromNamespaceAndPath(MOD_ID, "extras"), Extras::extract);
 
@@ -69,6 +73,7 @@ public final class RpgCombatClient implements ClientModInitializer {
 				new KeyMapping("key.rpgcombat.edit_mode", InputConstants.Type.KEYSYM, 74, category));     // J
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			PackTheme.tick(client); // tema otomatis dari resource pack
 			boolean open = false;
 			boolean edit = false;
 			while (openKey.consumeClick()) open = true;
@@ -83,7 +88,7 @@ public final class RpgCombatClient implements ClientModInitializer {
 			}
 			if (client.player == null) return;
 			if (edit) {
-				McCompat.openScreen(new HudEditScreen());
+				McCompat.openScreen(new HudCustomizerScreen());
 			} else if (open) {
 				McCompat.openScreen(new SettingsScreen());
 			}
@@ -92,6 +97,23 @@ public final class RpgCombatClient implements ClientModInitializer {
 		// 5) command: /rpghud ... dan /combatfx ...
 		HudCommands.register();
 		CombatCommands.register();
+	}
+
+	/**
+	 * Tooltip nama item vanilla disembunyikan supaya popup nama kita tidak dobel.
+	 * Kalau elemennya tidak ditemukan, popup kita dimatikan otomatis dan tooltip vanilla tetap dipakai.
+	 */
+	private static void hideVanillaHeldItemTooltip() {
+		try {
+			HudElementRegistry.replaceElement(Identifier.fromNamespaceAndPath("minecraft", "held_item_tooltip"),
+					original -> (graphics, delta) -> {
+						if (!ExtrasConfig.get().hotbarNameEnabled || !HotbarName.available) {
+							original.extractRenderState(graphics, delta);
+						}
+					});
+		} catch (Throwable t) {
+			HotbarName.available = false;
+		}
 	}
 
 	private static void hideVanilla(Identifier id) {

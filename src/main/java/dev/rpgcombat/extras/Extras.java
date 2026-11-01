@@ -4,7 +4,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
-/** Penghubung: satu callback tick + satu elemen HUD untuk kedua fitur extras. */
+/** Penghubung: satu callback tick + satu elemen HUD untuk modul extras. */
 public final class Extras {
 	private Extras() {}
 
@@ -13,6 +13,7 @@ public final class Extras {
 	public static void onTick(Minecraft mc) {
 		BreakProgress.tick(mc);
 		PickupDetector.tick(mc);
+		HotbarName.tick(mc);
 	}
 
 	public static void extract(GuiGraphicsExtractor g, DeltaTracker deltaTracker) {
@@ -26,5 +27,6 @@ public final class Extras {
 
 		if (cfg.breakEnabled) BreakProgress.render(g, mc, cfg, dt);
 		if (cfg.pickupEnabled) PickupManager.render(g, mc, cfg, dt);
+		HotbarName.render(g, mc, cfg);
 	}
 }
