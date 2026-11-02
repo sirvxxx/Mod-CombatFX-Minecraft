@@ -86,5 +86,22 @@
   "rpgcombat.edit.mining": "Mining progress",
   "rpgcombat.edit.hotbar": "Hotbar item name",
   "rpgcombat.opt.hotbar_name": "Hotbar item name",
-  "rpgcombat.btn.refresh_theme": "Refresh pack theme"
+  "rpgcombat.btn.refresh_theme": "Refresh pack theme",
+  "rpgcombat.tab.opacity": "Opacity",
+  "rpgcombat.op.face": "Player card",
+  "rpgcombat.op.bars": "Status bars",
+  "rpgcombat.op.info": "Coords / FPS",
+  "rpgcombat.op.combo": "Combo counter",
+  "rpgcombat.op.numbers": "Damage numbers",
+  "rpgcombat.op.mining": "Mining bar",
+  "rpgcombat.op.pickup": "Pickup popups",
+  "rpgcombat.op.hotbar": "Hotbar item name",
+  "rpgcombat.btn.open_editor": "Open HUD editor (drag & drop)",
+  "rpgcombat.info.opacity": "Opacity applies to each element separately (10% - 100%).",
+  "rpgcombat.edit.face": "Player card",
+  "rpgcombat.edit.bars": "Status bars",
+  "rpgcombat.edit.info": "Coords / FPS",
+  "rpgcombat.edit.opacity": "Opacity",
+  "rpgcombat.edit.opacity_minus": "Opacity -",
+  "rpgcombat.edit.opacity_plus": "Opacity +"
 }

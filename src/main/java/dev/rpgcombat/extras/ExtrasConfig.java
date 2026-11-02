@@ -9,6 +9,7 @@ public class ExtrasConfig {
 	public int breakStyle = 0;               // 0 = linear, 1 = circular
 	public boolean breakShowPercent = true;
 	public float breakScale = 1.0f;          // 0.5 - 2.0
+	public float breakOpacity = 1.0f;        // 0.1 - 1.0
 	public int breakOffsetX = 0;             // dari tengah layar
 	public int breakOffsetY = 14;            // dari tengah layar (linear: di bawah crosshair)
 
@@ -20,6 +21,7 @@ public class ExtrasConfig {
 	public int pickupDurationMs = 2800;      // 1000 - 8000
 	public int pickupMaxVisible = 6;         // 1 - 10
 	public float pickupScale = 1.0f;         // 0.6 - 1.6
+	public float pickupOpacity = 1.0f;       // 0.1 - 1.0
 	public int pickupMarginRight = 10;       // dari tepi kanan layar
 	public int pickupOffsetY = 0;            // dari tengah layar
 
@@ -28,6 +30,7 @@ public class ExtrasConfig {
 	public int hotbarNameOffsetX = 0;        // dari tengah layar
 	public int hotbarNameOffsetY = 0;        // dari posisi bawaan di atas hotbar
 	public float hotbarNameScale = 1.0f;     // 0.6 - 2.0
+	public float hotbarNameOpacity = 1.0f;   // 0.1 - 1.0
 
 	public static ExtrasConfig get() {
 		return ModConfig.get().extras;
@@ -40,6 +43,9 @@ public class ExtrasConfig {
 
 	public void sanitize() {
 		breakStyle = breakStyle == 1 ? 1 : 0;
+		breakOpacity = Math.max(0.1f, Math.min(1.0f, breakOpacity));
+		pickupOpacity = Math.max(0.1f, Math.min(1.0f, pickupOpacity));
+		hotbarNameOpacity = Math.max(0.1f, Math.min(1.0f, hotbarNameOpacity));
 		breakScale = Math.max(0.5f, Math.min(2.0f, breakScale));
 		breakOffsetX = Math.max(-1500, Math.min(1500, breakOffsetX));
 		breakOffsetY = Math.max(-900, Math.min(900, breakOffsetY));

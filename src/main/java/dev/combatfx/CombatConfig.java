@@ -17,6 +17,8 @@ public class CombatConfig {
 
 	public float numberScale = 1.0f;   // 0.5 - 2.0
 	public float comboScale = 1.0f;    // 0.5 - 2.0
+	public float comboOpacity = 1.0f;  // 0.1 - 1.0
+	public float numberOpacity = 1.0f; // angka damage, 0.1 - 1.0
 	public float heavyDamage = 8.0f;   // HP; >= ini (tanpa crit) = Heavy
 	public int comboTimeoutMs = 1500;  // 500 - 5000
 	public int comboOffsetX = 34;      // dari tengah layar
@@ -44,6 +46,8 @@ public class CombatConfig {
 	public void sanitize() {
 		numberScale = Math.max(0.5f, Math.min(2.0f, numberScale));
 		comboScale = Math.max(0.5f, Math.min(2.0f, comboScale));
+		comboOpacity = Math.max(0.1f, Math.min(1.0f, comboOpacity));
+		numberOpacity = Math.max(0.1f, Math.min(1.0f, numberOpacity));
 		heavyDamage = Math.max(1.0f, Math.min(100.0f, heavyDamage));
 		comboTimeoutMs = Math.max(300, Math.min(10000, comboTimeoutMs));
 		comboOffsetX = Math.max(-1500, Math.min(1500, comboOffsetX));

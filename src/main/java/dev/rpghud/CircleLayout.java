@@ -92,7 +92,7 @@ final class CircleLayout {
         int ctop = CircleLayout.circleTop(c);
         if (c.showName) {
             HudDraw.badge(g, t, 0, 0, 92, 17);
-            g.text(mc.font, HudState.nameCircle, (92 - HudState.nameCircleW) / 2, 5, t.text, true);
+            HudAlpha.text(g, mc.font, HudState.nameCircle, (92 - HudState.nameCircleW) / 2, 5, t.text, true);
         }
         if (circle) {
             CircleLayout.drawCircle(g, mc, c, t, ctop);
@@ -103,23 +103,23 @@ final class CircleLayout {
             HudDraw.frame(g, t, sx, sy, HudState.coordsPanelW, 19);
             HudDraw.icon(g, t.iconCoords, sx + 7, sy + 5);
             tx = sx + 7 + 8 + 3;
-            g.text(mc.font, HudState.coordsLabel, tx, sy + 6, t.text, true);
-            g.text(mc.font, HudState.coordsVals, tx + HudState.coordsLabelW, sy + 6, -1, true);
+            HudAlpha.text(g, mc.font, HudState.coordsLabel, tx, sy + 6, t.text, true);
+            HudAlpha.text(g, mc.font, HudState.coordsVals, tx + HudState.coordsLabelW, sy + 6, -1, true);
             sy += 23;
         }
         if (c.showFps) {
             HudDraw.frame(g, t, sx, sy, HudState.fpsPanelW, 19);
             HudDraw.icon(g, t.iconFps, sx + 7, sy + 5);
             tx = sx + 7 + 8 + 3;
-            g.text(mc.font, HudState.fpsNum, tx, sy + 6, HudRenderer.fpsColor(), true);
-            g.text(mc.font, HudState.fpsLabel, tx + HudState.fpsNumW, sy + 6, t.text, true);
+            HudAlpha.text(g, mc.font, HudState.fpsNum, tx, sy + 6, HudRenderer.fpsColor(), true);
+            HudAlpha.text(g, mc.font, HudState.fpsLabel, tx + HudState.fpsNumW, sy + 6, t.text, true);
         }
     }
 
     private static void drawCircle(GuiGraphicsExtractor g, Minecraft mc, HudConfig c, HudTheme t, int top) {
         int cx = 46;
         int cy = top + 46;
-        g.blit(RenderPipelines.GUI_TEXTURED, t.ring, 0, top, 0.0f, 0.0f, 96, 96, 96, 96, 96, 96);
+        HudAlpha.blit(g, t.ring, 0, top, 0.0f, 0.0f, 96, 96, 96, 96, 96, 96);
         long key = HudState.statKey(c.showHealth, c.showHunger, c.showArmor);
         if (key != ringKey) {
             ringKey = key;
@@ -127,15 +127,15 @@ final class CircleLayout {
         }
         RING.draw(g, 46, cy);
         if (c.showFace) {
-            g.blit(RenderPipelines.GUI_TEXTURED, HudState.skin, 26, cy - 20, 8.0f, 8.0f, 40, 40, 8, 8, 64, 64);
-            g.blit(RenderPipelines.GUI_TEXTURED, HudState.skin, 26, cy - 20, 40.0f, 8.0f, 40, 40, 8, 8, 64, 64);
+            HudAlpha.blit(g, HudState.skin, 26, cy - 20, 8.0f, 8.0f, 40, 40, 8, 8, 64, 64);
+            HudAlpha.blit(g, HudState.skin, 26, cy - 20, 40.0f, 8.0f, 40, 40, 8, 8, 64, 64);
         }
         if (c.showLevel) {
             int bw = Math.max(56, HudState.levelW + 22);
             int bx = (92 - bw) / 2;
             int by = top + 92 + 4;
             HudDraw.badge(g, t, bx, by, bw, 17);
-            g.text(mc.font, HudState.levelStr, bx + (bw - HudState.levelW) / 2, by + 5, t.level, true);
+            HudAlpha.text(g, mc.font, HudState.levelStr, bx + (bw - HudState.levelW) / 2, by + 5, t.level, true);
         }
     }
 

@@ -64,7 +64,7 @@ public final class CombatHud {
 			double wz = t.z + t.driftZ * ease;
 			if (!PROJ.project(wx, wy, wz)) continue;
 
-			float alpha = prog < 0.6f ? 1f : 1f - (prog - 0.6f) / 0.4f;
+			float alpha = (prog < 0.6f ? 1f : 1f - (prog - 0.6f) / 0.4f) * cfg.numberOpacity;
 			int a = Math.max(5, Math.min(255, (int) (alpha * 255f)));
 
 			// pop dua fase: 0-70ms membesar cepat, 70-230ms menyusut ke normal
@@ -117,7 +117,7 @@ public final class CombatHud {
 
 		long remain = ComboManager.remainingMs(now);
 		float fade = Math.min(1f, remain / 250f);
-		int a = Math.max(5, (int) (fade * 255f));
+		int a = Math.max(5, (int) (fade * cfg.comboOpacity * 255f));
 
 		float pulse = 1f;
 		if (cfg.comboPulse) {

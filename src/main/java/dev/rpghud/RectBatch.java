@@ -84,7 +84,7 @@ final class RectBatch {
 
     void draw(GuiGraphicsExtractor g, int ox, int oy) {
         for (int i = 0; i < this.n; ++i) {
-            g.fill(ox + this.x0[i], oy + this.y0[i], ox + this.x1[i], oy + this.y1[i], this.col[i]);
+            HudAlpha.fill(g, ox + this.x0[i], oy + this.y0[i], ox + this.x1[i], oy + this.y1[i], this.col[i]);
         }
     }
 

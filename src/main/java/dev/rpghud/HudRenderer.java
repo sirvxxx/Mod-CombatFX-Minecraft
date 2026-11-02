@@ -90,7 +90,9 @@ public final class HudRenderer {
         if (c.layoutType == 1) {
             BarLayout.draw(g, mc, p, c);
         } else {
+            HudAlpha.set(c.barsOpacity);
             CircleLayout.draw(g, mc, p, c);
+            HudAlpha.set(1.0f);
         }
         pose.popMatrix();
     }

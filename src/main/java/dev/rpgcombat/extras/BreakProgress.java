@@ -27,7 +27,8 @@ public final class BreakProgress {
 	private static float target;    // dari tick
 	private static boolean active;
 	private static float shown;     // nilai tampil (smooth)
-	private static float alpha;     // 0..1
+	private static float alpha;     // 0..1 (animasi)
+	private static float op = 1f;   // opacity dari pengaturan
 
 	// cache titik cincin untuk gaya circular
 	private static final int RING_N = 72;
@@ -109,6 +110,7 @@ public final class BreakProgress {
 			}
 		}
 		if (alpha <= 0.01f) return;
+		op = cfg.breakOpacity;
 
 		var window = mc.getWindow();
 		int cx = window.getGuiScaledWidth() / 2 + cfg.breakOffsetX;
@@ -129,11 +131,11 @@ public final class BreakProgress {
 		int y0 = cy + cfg.breakOffsetY;
 		int filled = Math.round(w * p);
 
-		g.fill(x0 - 1, y0 - 1, x0 + w + 1, y0 + h + 1, Fx.argb(alpha * 0.60f, 0x000000));
-		g.fill(x0, y0, x0 + w, y0 + h, Fx.argb(alpha * 0.85f, TRACK));
+		g.fill(x0 - 1, y0 - 1, x0 + w + 1, y0 + h + 1, Fx.argb(alpha * op * 0.60f, 0x000000));
+		g.fill(x0, y0, x0 + w, y0 + h, Fx.argb(alpha * op * 0.85f, TRACK));
 		if (filled > 0) {
-			g.fill(x0, y0, x0 + filled, y0 + h, Fx.argb(alpha, FILL));
-			if (h >= 3) g.fill(x0, y0 + h - 1, x0 + filled, y0 + h, Fx.argb(alpha, FILL_SHADE));
+			g.fill(x0, y0, x0 + filled, y0 + h, Fx.argb(alpha * op, FILL));
+			if (h >= 3) g.fill(x0, y0 + h - 1, x0 + filled, y0 + h, Fx.argb(alpha * op, FILL_SHADE));
 		}
 		if (cfg.breakShowPercent) {
 			drawPercent(g, mc, cfg, cx, y0 + h + 3, p);
@@ -145,12 +147,12 @@ public final class BreakProgress {
 		if (r != ringR) buildRing(r);
 		int t = Math.max(2, Math.round(2 * cfg.breakScale));
 
-		int bg = Fx.argb(alpha * 0.70f, TRACK);
+		int bg = Fx.argb(alpha * op * 0.70f, TRACK);
 		for (int i = 0; i < RING_N; i++) {
 			g.fill(cx + RING_X[i], cy + RING_Y[i], cx + RING_X[i] + t, cy + RING_Y[i] + t, bg);
 		}
 		int k = Math.round(RING_N * p);
-		int fg = Fx.argb(alpha, FILL);
+		int fg = Fx.argb(alpha * op, FILL);
 		for (int i = 0; i < k; i++) {
 			g.fill(cx + RING_X[i], cy + RING_Y[i], cx + RING_X[i] + t, cy + RING_Y[i] + t, fg);
 		}
@@ -166,7 +168,7 @@ public final class BreakProgress {
 		g.pose().pushMatrix();
 		g.pose().translate(cx, y);
 		g.pose().scale(sc, sc);
-		g.text(font, s, -font.width(s) / 2, 0, Fx.argb(alpha, FILL), true);
+		g.text(font, s, -font.width(s) / 2, 0, Fx.argb(alpha * op, FILL), true);
 		g.pose().popMatrix();
 	}
 

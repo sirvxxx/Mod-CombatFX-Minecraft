@@ -1,5 +1,6 @@
 package dev.rpgcombat.theme;
 
+import dev.rpghud.HudAlpha;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -8,7 +9,6 @@ import java.util.Optional;
 import javax.imageio.ImageIO;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 
@@ -197,9 +197,9 @@ public final class PackTheme {
 	// ---------------------------------------------------------------- drawing
 	/** Panel HUD lengkap: bayangan + isi + bingkai dari resource pack. */
 	public static void panel(GuiGraphicsExtractor g, int x, int y, int w, int h) {
-		g.fill(x + 1, y + 1, x + w + 3, y + h + 3, 0x22000000);
-		g.fill(x + 2, y + 3, x + w + 2, y + h + 2, 0x44000000);
-		g.fill(x, y, x + w, y + h, fillArgb);
+		HudAlpha.fill(g, x + 1, y + 1, x + w + 3, y + h + 3, 0x22000000);
+		HudAlpha.fill(g, x + 2, y + 3, x + w + 2, y + h + 2, 0x44000000);
+		HudAlpha.fill(g, x, y, x + w, y + h, fillArgb);
 		border(g, x, y, w, h);
 	}
 
@@ -208,28 +208,27 @@ public final class PackTheme {
 		if (!haveTex || w <= 2 * B || h <= 2 * B) {
 			int light = lighten(baseRgb, 0.35f);
 			int dark = darken(baseRgb, 0.45f);
-			g.fill(x, y, x + w, y + 1, 0xFF000000 | light);
-			g.fill(x, y, x + 1, y + h, 0xFF000000 | light);
-			g.fill(x, y + h - 1, x + w, y + h, 0xFF000000 | dark);
-			g.fill(x + w - 1, y, x + w, y + h, 0xFF000000 | dark);
+			HudAlpha.fill(g, x, y, x + w, y + 1, 0xFF000000 | light);
+			HudAlpha.fill(g, x, y, x + 1, y + h, 0xFF000000 | light);
+			HudAlpha.fill(g, x, y + h - 1, x + w, y + h, 0xFF000000 | dark);
+			HudAlpha.fill(g, x + w - 1, y, x + w, y + h, 0xFF000000 | dark);
 			return;
 		}
 		int rw = Math.round(PANEL_W * scale); // lebar/tinggi panel dalam piksel tekstur
 		int rh = Math.round(PANEL_H * scale);
 		int right = rw - bt;
 		int bottom = rh - bt;
-		var pipe = RenderPipelines.GUI_TEXTURED;
 
 		// sudut
-		g.blit(pipe, INVENTORY, x, y, 0f, 0f, B, B, bt, bt, texW, texH);
-		g.blit(pipe, INVENTORY, x + w - B, y, (float) right, 0f, B, B, bt, bt, texW, texH);
-		g.blit(pipe, INVENTORY, x, y + h - B, 0f, (float) bottom, B, B, bt, bt, texW, texH);
-		g.blit(pipe, INVENTORY, x + w - B, y + h - B, (float) right, (float) bottom, B, B, bt, bt, texW, texH);
+		HudAlpha.blit(g, INVENTORY, x, y, 0f, 0f, B, B, bt, bt, texW, texH);
+		HudAlpha.blit(g, INVENTORY, x + w - B, y, (float) right, 0f, B, B, bt, bt, texW, texH);
+		HudAlpha.blit(g, INVENTORY, x, y + h - B, 0f, (float) bottom, B, B, bt, bt, texW, texH);
+		HudAlpha.blit(g, INVENTORY, x + w - B, y + h - B, (float) right, (float) bottom, B, B, bt, bt, texW, texH);
 		// sisi
-		g.blit(pipe, INVENTORY, x + B, y, (float) bt, 0f, w - 2 * B, B, rw - 2 * bt, bt, texW, texH);
-		g.blit(pipe, INVENTORY, x + B, y + h - B, (float) bt, (float) bottom, w - 2 * B, B, rw - 2 * bt, bt, texW, texH);
-		g.blit(pipe, INVENTORY, x, y + B, 0f, (float) bt, B, h - 2 * B, bt, rh - 2 * bt, texW, texH);
-		g.blit(pipe, INVENTORY, x + w - B, y + B, (float) right, (float) bt, B, h - 2 * B, bt, rh - 2 * bt, texW, texH);
+		HudAlpha.blit(g, INVENTORY, x + B, y, (float) bt, 0f, w - 2 * B, B, rw - 2 * bt, bt, texW, texH);
+		HudAlpha.blit(g, INVENTORY, x + B, y + h - B, (float) bt, (float) bottom, w - 2 * B, B, rw - 2 * bt, bt, texW, texH);
+		HudAlpha.blit(g, INVENTORY, x, y + B, 0f, (float) bt, B, h - 2 * B, bt, rh - 2 * bt, texW, texH);
+		HudAlpha.blit(g, INVENTORY, x + w - B, y + B, (float) right, (float) bt, B, h - 2 * B, bt, rh - 2 * bt, texW, texH);
 	}
 
 	/** Warna latar menu (sedikit lebih terang dari isi HUD). */

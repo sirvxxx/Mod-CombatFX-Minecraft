@@ -86,5 +86,22 @@
   "rpgcombat.edit.mining": "Progress menambang",
   "rpgcombat.edit.hotbar": "Nama item hotbar",
   "rpgcombat.opt.hotbar_name": "Nama item hotbar",
-  "rpgcombat.btn.refresh_theme": "Muat ulang tema pack"
+  "rpgcombat.btn.refresh_theme": "Muat ulang tema pack",
+  "rpgcombat.tab.opacity": "Transparansi",
+  "rpgcombat.op.face": "Kartu pemain",
+  "rpgcombat.op.bars": "Status bar",
+  "rpgcombat.op.info": "Koordinat / FPS",
+  "rpgcombat.op.combo": "Penghitung combo",
+  "rpgcombat.op.numbers": "Angka damage",
+  "rpgcombat.op.mining": "Bar menambang",
+  "rpgcombat.op.pickup": "Popup item masuk",
+  "rpgcombat.op.hotbar": "Nama item hotbar",
+  "rpgcombat.btn.open_editor": "Buka editor HUD (drag & drop)",
+  "rpgcombat.info.opacity": "Transparansi diatur terpisah untuk tiap elemen (10% - 100%).",
+  "rpgcombat.edit.face": "Kartu pemain",
+  "rpgcombat.edit.bars": "Status bar",
+  "rpgcombat.edit.info": "Koordinat / FPS",
+  "rpgcombat.edit.opacity": "Transparansi",
+  "rpgcombat.edit.opacity_minus": "Transp. -",
+  "rpgcombat.edit.opacity_plus": "Transp. +"
 }

@@ -1,29 +1,19 @@
 package dev.rpgcombat.extras;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 
 /**
- * Satu popup. Semua teks dan lebar dihitung SEKALI saat dibuat,
+ * Satu popup item. Semua teks dan lebar dihitung SEKALI saat dibuat,
  * jadi menggambarnya per frame murah (tanpa string/format baru).
  *
  * Titik asal gambar (0,0) = pojok kanan-atas blok; blok digambar ke kiri (x negatif).
- * Susunan: [ikon item] [+N Nama] / durability / chip enchant (rata kiri di samping ikon).
+ * Susunan: [ikon item] [+N Nama] / durability / daftar enchant (rata kiri di samping ikon).
  */
 final class PickupNotification {
 	static final int LINE = 10;
 	private static final int ICON_GAP = 4;
-	private static final int MAX_CHIPS = 8;
-	private static final int COLS = 2;
-	private static final int CHIP_GAP = 10;
 
 	final ItemStack sample;
 	int count;
@@ -33,19 +23,7 @@ final class PickupNotification {
 	private final String nameStr;
 	private final int nameW;
 	private final int nameRgb;
-
-	// chip enchantment
-	private int chipN;
-	private final String[] chipName = new String[MAX_CHIPS + 1];
-	private final int[] chipNameW = new int[MAX_CHIPS + 1];
-	private final String[] chipLvl = new String[MAX_CHIPS + 1];
-	private final int[] chipLvlW = new int[MAX_CHIPS + 1];
-	private final int[] chipBadge = new int[MAX_CHIPS + 1];
-	private final boolean[] chipHasBadge = new boolean[MAX_CHIPS + 1];
-	private final int[] chipRow = new int[MAX_CHIPS + 1];
-	private final int[] chipX = new int[MAX_CHIPS + 1];
-	private final int[] rowW = new int[MAX_CHIPS + 1];
-	private int rowCount;
+	private final EnchantChips chips;
 
 	// durability
 	private boolean hasDur;
@@ -55,7 +33,6 @@ final class PickupNotification {
 
 	int width;
 	int height;
-	private int contentW;
 
 	// state animasi (dikelola PickupManager)
 	long popMs;
@@ -69,13 +46,8 @@ final class PickupNotification {
 		this.count = count;
 		this.nameStr = s.getHoverName().getString();
 		this.nameW = font.width(nameStr);
-
-		ItemEnchantments ench = s.get(DataComponents.ENCHANTMENTS);
-		if (ench == null || ench.isEmpty()) ench = s.get(DataComponents.STORED_ENCHANTMENTS);
-		boolean enchanted = ench != null && !ench.isEmpty();
-		this.nameRgb = enchanted ? 0x8FEFFF : 0xFFFFFF;
-
-		if (cfg.pickupEnchants && enchanted) readEnchants(font, ench);
+		this.nameRgb = EnchantChips.has(s) ? 0x8FEFFF : 0xFFFFFF;
+		this.chips = cfg.pickupEnchants ? new EnchantChips(font, s, 2) : null;
 
 		if (cfg.pickupDurability && s.isDamageableItem() && s.getMaxDamage() > 0) {
 			int max = s.getMaxDamage();
@@ -88,59 +60,6 @@ final class PickupNotification {
 		refreshCount(font);
 	}
 
-	// ---------------------------------------------------------------- data
-	private void readEnchants(Font font, ItemEnchantments ench) {
-		List<Object2IntMap.Entry<Holder<Enchantment>>> list = new ArrayList<>(ench.entrySet());
-		// level tertinggi dulu, lalu nama
-		list.sort((a, b) -> {
-			int c = Integer.compare(b.getIntValue(), a.getIntValue());
-			return c != 0 ? c : a.getKey().value().description().getString()
-					.compareTo(b.getKey().value().description().getString());
-		});
-
-		int shown = Math.min(list.size(), MAX_CHIPS);
-		for (int i = 0; i < shown; i++) {
-			Object2IntMap.Entry<Holder<Enchantment>> e = list.get(i);
-			Enchantment en = e.getKey().value();
-			int level = e.getIntValue();
-			int max = en.getMaxLevel();
-
-			chipName[i] = en.description().getString();
-			chipNameW[i] = font.width(chipName[i]);
-			chipHasBadge[i] = max > 1 || level > 1;
-			if (chipHasBadge[i]) {
-				chipLvl[i] = Fx.roman(level);
-				chipLvlW[i] = font.width(chipLvl[i]);
-				// level maksimal = merah, tinggi = biru, sisanya = hijau
-				chipBadge[i] = level >= max ? 0xD04040 : (level * 10 >= max * 6 ? 0x3D7BE0 : 0x3FA06B);
-			}
-		}
-		chipN = shown;
-		if (list.size() > shown) { // chip ringkasan "+N"
-			chipName[chipN] = "+" + (list.size() - shown);
-			chipNameW[chipN] = font.width(chipName[chipN]);
-			chipHasBadge[chipN] = false;
-			chipN++;
-		}
-
-		// susun chip ke baris (COLS per baris)
-		int rowIdx = 0;
-		int x = 0;
-		for (int i = 0; i < chipN; i++) {
-			int w = chipNameW[i] + (chipHasBadge[i] ? 3 + chipLvlW[i] + 4 : 0);
-			if (i % COLS == 0 && i > 0) {
-				rowW[rowIdx] = x - CHIP_GAP;
-				rowIdx++;
-				x = 0;
-			}
-			chipRow[i] = rowIdx;
-			chipX[i] = x;
-			x += w + CHIP_GAP;
-		}
-		rowW[rowIdx] = x - CHIP_GAP;
-		rowCount = rowIdx + 1;
-	}
-
 	/** Dipanggil saat dibuat dan saat jumlah bertambah (merge). */
 	void refreshCount(Font font) {
 		countStr = "+" + count;
@@ -148,13 +67,12 @@ final class PickupNotification {
 
 		int w = countW + 4 + nameW;
 		if (hasDur) w = Math.max(w, Math.max(durStrW, 70));
-		for (int r = 0; r < rowCount; r++) w = Math.max(w, rowW[r]);
-		this.contentW = w;
+		if (chips != null) w = Math.max(w, chips.width());
 		this.width = ItemIcon.SIZE + ICON_GAP + w;
 
 		int h = LINE;
 		if (hasDur) h += 13;
-		h += rowCount * (LINE + 1);
+		if (chips != null) h += chips.height();
 		this.height = Math.max(ItemIcon.SIZE, h);
 	}
 
@@ -164,15 +82,18 @@ final class PickupNotification {
 		this.expireMs = now + durationMs;
 	}
 
-	// ---------------------------------------------------------------- draw
-	void draw(GuiGraphicsExtractor g, Font font, float alpha) {
+	/**
+	 * @param anim alpha animasi (masuk/keluar), dipakai juga untuk ikon
+	 * @param op   opacity dari pengaturan, hanya untuk teks dan panel
+	 */
+	void draw(GuiGraphicsExtractor g, Font font, float anim, float op) {
+		float alpha = anim * op;
 		int left = -width;
-		ItemIcon.draw(g, sample, left, 0, alpha);
+		if (op >= 0.3f) ItemIcon.draw(g, sample, left, 0, anim);
 
 		int cx = left + ItemIcon.SIZE + ICON_GAP;
 		int y0 = 0;
 
-		// "+3 Nama Item"
 		g.text(font, countStr, cx, y0, Fx.argb(alpha, 0x55FF55), true);
 		g.text(font, nameStr, cx + countW + 4, y0, Fx.argb(alpha, nameRgb), true);
 		y0 += LINE;
@@ -184,23 +105,13 @@ final class PickupNotification {
 			g.fill(cx, y0, cx + bw, y0 + 2, Fx.argb(alpha * 0.6f, 0x20242C));
 			int filled = Math.round(bw * durFrac);
 			if (filled > 0) {
-				g.fill(cx, y0, cx + filled, y0 + 2,
-						Fx.argb(alpha, Fx.lerpColor(0xFF4040, 0x55FF55, durFrac)));
+				g.fill(cx, y0, cx + filled, y0 + 2, Fx.argb(alpha, Fx.lerpColor(0xFF4040, 0x55FF55, durFrac)));
 			}
 			y0 += 3;
 		}
 
-		// enchantment: sub-teks tepat di bawah nama
-		for (int i = 0; i < chipN; i++) {
-			int r = chipRow[i];
-			int x = cx + chipX[i];
-			int y = y0 + r * (LINE + 1);
-			g.text(font, chipName[i], x, y, Fx.argb(alpha, 0xCFD8E6), true);
-			if (chipHasBadge[i]) {
-				int bx = x + chipNameW[i] + 3;
-				g.fill(bx, y - 1, bx + chipLvlW[i] + 4, y + 9, Fx.argb(alpha * 0.9f, chipBadge[i]));
-				g.text(font, chipLvl[i], bx + 2, y, Fx.argb(alpha, 0xFFFFFF), false);
-			}
+		if (chips != null && !chips.isEmpty()) {
+			chips.draw(g, font, cx, y0, alpha, false);
 		}
 	}
 }

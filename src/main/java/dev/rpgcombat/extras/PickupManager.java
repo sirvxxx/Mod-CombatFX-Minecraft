@@ -132,13 +132,13 @@ public final class PickupManager {
 			float bump = Math.max(0f, 1f - (now - p.bumpMs) / 200f);
 			s *= 1f + 0.12f * bump * bump;
 
-			if (al <= 0.02f) continue;
+			if (al * cfg.pickupOpacity <= 0.02f) continue;
 
 			g.pose().pushMatrix();
 			g.pose().translate(right + xo * sc, p.y + p.height * sc * 0.5f);
 			g.pose().scale(sc * s, sc * s);
 			g.pose().translate(0f, -p.height * 0.5f);
-			p.draw(g, mc.font, al);
+			p.draw(g, mc.font, al, cfg.pickupOpacity);
 			g.pose().popMatrix();
 		}
 	}

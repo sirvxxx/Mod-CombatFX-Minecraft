@@ -42,6 +42,7 @@ public class SettingsScreen extends Screen {
 		ELEMENTS("rpgcombat.tab.elements"),
 		COMBAT("rpgcombat.tab.combat"),
 		EXTRAS("rpgcombat.tab.extras"),
+		OPACITY("rpgcombat.tab.opacity"),
 		COLORS("rpgcombat.tab.colors");
 
 		final String key;
@@ -113,10 +114,11 @@ public class SettingsScreen extends Screen {
 
 		// ---- sidebar: tombol tab ----
 		Tab[] tabs = Tab.values();
+		int step = Math.max(21, Math.min(24, (ph - 78) / tabs.length));
 		for (int i = 0; i < tabs.length; i++) {
 			final Tab tab = tabs[i];
 			int bx = px + 9;
-			int by = py + 30 + i * 24;
+			int by = py + 30 + i * step;
 			int bw = SIDE_W - 18;
 			this.addRenderableWidget(Button.builder(tr(tab.key), b -> {
 				if (currentTab != tab) {
@@ -136,6 +138,7 @@ public class SettingsScreen extends Screen {
 			case ELEMENTS -> buildElements();
 			case COMBAT -> buildCombat();
 			case EXTRAS -> buildExtras();
+			case OPACITY -> buildOpacity();
 			case COLORS -> buildColors();
 		}
 	}
@@ -323,6 +326,29 @@ public class SettingsScreen extends Screen {
 		boolean circular = ExtrasConfig.get().breakStyle == 1;
 		return Component.translatable("rpgcombat.opt.break_style",
 				Component.translatable(circular ? "rpgcombat.style.circular" : "rpgcombat.style.linear"));
+	}
+
+	private void buildOpacity() {
+		opacity(0, 0, "rpgcombat.op.face", () -> HudConfig.get().faceOpacity, v -> HudConfig.get().faceOpacity = (float) v);
+		opacity(1, 0, "rpgcombat.op.bars", () -> HudConfig.get().barsOpacity, v -> HudConfig.get().barsOpacity = (float) v);
+		opacity(0, 1, "rpgcombat.op.info", () -> HudConfig.get().infoOpacity, v -> HudConfig.get().infoOpacity = (float) v);
+		opacity(1, 1, "rpgcombat.op.combo", () -> CombatConfig.get().comboOpacity, v -> CombatConfig.get().comboOpacity = (float) v);
+		opacity(0, 2, "rpgcombat.op.numbers", () -> CombatConfig.get().numberOpacity, v -> CombatConfig.get().numberOpacity = (float) v);
+		opacity(1, 2, "rpgcombat.op.mining", () -> ExtrasConfig.get().breakOpacity, v -> ExtrasConfig.get().breakOpacity = (float) v);
+		opacity(0, 3, "rpgcombat.op.pickup", () -> ExtrasConfig.get().pickupOpacity, v -> ExtrasConfig.get().pickupOpacity = (float) v);
+		opacity(1, 3, "rpgcombat.op.hotbar", () -> ExtrasConfig.get().hotbarNameOpacity, v -> ExtrasConfig.get().hotbarNameOpacity = (float) v);
+
+		button(0, 4, 2, tr("rpgcombat.btn.open_editor"), b -> {
+			ModConfig.save();
+			McCompat.openScreen(new HudCustomizerScreen());
+		});
+		labels.add(new Label(cx, rowY(5) + 4, tr("rpgcombat.info.opacity").getString(), 0xFF9AA5B8));
+	}
+
+	/** Slider opacity 10% - 100% (nilai disimpan 0.1 - 1.0). */
+	private void opacity(int col, int row, String labelKey, DoubleSupplier get, DoubleConsumer set) {
+		slider(col, row, 1, labelKey, 10, () -> 100.0, 5, "%.0f%%",
+				() -> get.getAsDouble() * 100.0, v -> set.accept(v / 100.0));
 	}
 
 	private void buildColors() {

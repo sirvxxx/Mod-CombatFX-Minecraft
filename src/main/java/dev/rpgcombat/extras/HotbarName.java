@@ -4,22 +4,22 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * Notifikasi nama item saat berganti item di tangan/hotbar.
- * Hanya NAMA (tanpa enchant/durability) supaya hotbar tetap bersih.
+ * Popup saat berganti item di tangan/hotbar: NAMA item + daftar enchantment di bawahnya
+ * (contoh: Netherite Sword / Sharpness [V]  Mending). Item tanpa enchant hanya menampilkan nama.
  *
- * Terdeteksi dari perubahan item di tangan utama (bukan dari nomor slot), jadi
- * tidak bergantung pada API Inventory yang berubah antar versi.
- * Tooltip vanilla disembunyikan oleh RpgCombatClient supaya tidak dobel.
+ * Terdeteksi dari perubahan item di tangan utama (bukan dari nomor slot), jadi tidak bergantung
+ * pada API Inventory yang berubah antar versi. Tooltip vanilla disembunyikan oleh RpgCombatClient.
+ * Blok ditambatkan di tepi bawah (dekat hotbar) dan tumbuh ke atas kalau enchant-nya banyak.
  */
 public final class HotbarName {
 	private HotbarName() {}
 
-	private static final long LIFE_MS = 1700L;
-	private static final long FADE_MS = 450L;
+	private static final long LIFE_MS = 2000L;
+	private static final long FADE_MS = 500L;
+	public static final int NAME_H = 10;
 
 	/** false kalau tooltip vanilla tidak bisa disembunyikan -> popup ini mati otomatis (tidak dobel). */
 	public static boolean available = true;
@@ -31,6 +31,7 @@ public final class HotbarName {
 	private static String text = "";
 	private static int textW;
 	private static int rgb = 0xFFFFFF;
+	private static EnchantChips chips;
 	private static long showMs = -100000L;
 
 	public static void tick(Minecraft mc) {
@@ -60,16 +61,22 @@ public final class HotbarName {
 			showMs = -100000L;
 			return;
 		}
+		Font font = mc.font;
 		text = cur.getHoverName().getString();
-		textW = mc.font.width(text);
-		boolean enchanted = cur.get(DataComponents.ENCHANTMENTS) != null && !cur.get(DataComponents.ENCHANTMENTS).isEmpty();
-		rgb = enchanted ? 0x8FEFFF : 0xFFFFFF;
+		textW = font.width(text);
+		rgb = EnchantChips.has(cur) ? 0x8FEFFF : 0xFFFFFF;
+		chips = new EnchantChips(font, cur, 2);
 		showMs = System.currentTimeMillis();
 	}
 
-	/** Posisi default: di atas hotbar, di tengah layar. */
+	/** Posisi default tepi atas baris nama (di atas hotbar). */
 	public static int defaultY(int screenH) {
 		return screenH - 62;
+	}
+
+	/** Tinggi blok untuk jumlah baris enchant tertentu. */
+	public static int blockHeight(int enchantRows) {
+		return NAME_H + (enchantRows > 0 ? 2 + enchantRows * EnchantChips.ROW_H : 0);
 	}
 
 	public static void render(GuiGraphicsExtractor g, Minecraft mc, ExtrasConfig cfg) {
@@ -77,7 +84,7 @@ public final class HotbarName {
 		long age = System.currentTimeMillis() - showMs;
 		if (age < 0 || age >= LIFE_MS) return;
 
-		// pop: 0.70 -> 1.06 -> 1.0 dalam 200 ms, lalu memudar di 450 ms terakhir
+		// pop: 0.70 -> 1.06 -> 1.0 dalam 220 ms, lalu memudar di 500 ms terakhir
 		float s;
 		if (age < 120L) {
 			s = Fx.lerp(age / 120f, 0.70f, 1.06f);
@@ -89,18 +96,26 @@ public final class HotbarName {
 		float alpha = age < 120L ? Fx.clamp01(age / 120f) : 1f;
 		long left = LIFE_MS - age;
 		if (left < FADE_MS) alpha = Math.min(alpha, left / (float) FADE_MS);
+		alpha *= cfg.hotbarNameOpacity;
 		if (alpha <= 0.02f) return;
 
 		var window = mc.getWindow();
-		float x = window.getGuiScaledWidth() / 2f + cfg.hotbarNameOffsetX;
-		float y = defaultY(window.getGuiScaledHeight()) + cfg.hotbarNameOffsetY;
+		int rows = chips == null ? 0 : chips.rows();
+		int h = blockHeight(rows);
 		float sc = cfg.hotbarNameScale * s;
+		float x = window.getGuiScaledWidth() / 2f + cfg.hotbarNameOffsetX;
+		float bottom = defaultY(window.getGuiScaledHeight()) + NAME_H + cfg.hotbarNameOffsetY;
 		Font font = mc.font;
 
+		// pivot di tengah-bawah blok, supaya "pop" tumbuh dari dekat hotbar
 		g.pose().pushMatrix();
-		g.pose().translate(x, y + 4f);
+		g.pose().translate(x, bottom);
 		g.pose().scale(sc, sc);
-		g.text(font, text, -textW / 2, -4, Fx.argb(alpha, rgb), true);
+		g.pose().translate(0f, (float) -h);
+		g.text(font, text, -textW / 2, 0, Fx.argb(alpha, rgb), true);
+		if (rows > 0) {
+			chips.draw(g, font, 0, NAME_H + 2, alpha, true);
+		}
 		g.pose().popMatrix();
 	}
 }

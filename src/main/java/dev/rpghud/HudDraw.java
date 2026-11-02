@@ -17,8 +17,8 @@ public final class HudDraw {
             PackTheme.panel(g, x, y, w, h);
             return;
         }
-        g.fill(x + 1, y + 1, x + w + 3, y + h + 3, 0x22000000);
-        g.fill(x + 2, y + 3, x + w + 2, y + h + 2, 0x44000000);
+        HudAlpha.fill(g, x + 1, y + 1, x + w + 3, y + h + 3, 0x22000000);
+        HudAlpha.fill(g, x + 2, y + 3, x + w + 2, y + h + 2, 0x44000000);
         HudDraw.slice(g, t.frame, 20, 20, 5, x, y, w, h);
     }
 
@@ -27,12 +27,12 @@ public final class HudDraw {
             PackTheme.panel(g, x, y, w, h);
             return;
         }
-        g.fill(x + 1, y + 2, x + w + 1, y + h + 2, 0x55000000);
+        HudAlpha.fill(g, x + 1, y + 2, x + w + 1, y + h + 2, 0x55000000);
         HudDraw.slice(g, t.badge, 16, 16, 4, x, y, w, h);
     }
 
     public static void icon(GuiGraphicsExtractor g, Identifier tex, int x, int y) {
-        g.blit(RenderPipelines.GUI_TEXTURED, tex, x, y, 0.0f, 0.0f, 8, 8, 8, 8, 8, 8);
+        HudAlpha.blit(g, tex, x, y, 0.0f, 0.0f, 8, 8, 8, 8, 8, 8);
     }
 
     public static void slice(GuiGraphicsExtractor g, Identifier tex, int tw, int th, int b, int x, int y, int w, int h) {
@@ -40,20 +40,20 @@ public final class HudDraw {
         int ch = th - 2 * b;
         int mw = w - 2 * b;
         int mh = h - 2 * b;
-        g.blit(RenderPipelines.GUI_TEXTURED, tex, x, y, 0.0f, 0.0f, b, b, b, b, tw, th);
-        g.blit(RenderPipelines.GUI_TEXTURED, tex, x + w - b, y, (float)(tw - b), 0.0f, b, b, b, b, tw, th);
-        g.blit(RenderPipelines.GUI_TEXTURED, tex, x, y + h - b, 0.0f, (float)(th - b), b, b, b, b, tw, th);
-        g.blit(RenderPipelines.GUI_TEXTURED, tex, x + w - b, y + h - b, (float)(tw - b), (float)(th - b), b, b, b, b, tw, th);
+        HudAlpha.blit(g, tex, x, y, 0.0f, 0.0f, b, b, b, b, tw, th);
+        HudAlpha.blit(g, tex, x + w - b, y, (float)(tw - b), 0.0f, b, b, b, b, tw, th);
+        HudAlpha.blit(g, tex, x, y + h - b, 0.0f, (float)(th - b), b, b, b, b, tw, th);
+        HudAlpha.blit(g, tex, x + w - b, y + h - b, (float)(tw - b), (float)(th - b), b, b, b, b, tw, th);
         if (mw > 0) {
-            g.blit(RenderPipelines.GUI_TEXTURED, tex, x + b, y, (float)b, 0.0f, mw, b, cw, b, tw, th);
-            g.blit(RenderPipelines.GUI_TEXTURED, tex, x + b, y + h - b, (float)b, (float)(th - b), mw, b, cw, b, tw, th);
+            HudAlpha.blit(g, tex, x + b, y, (float)b, 0.0f, mw, b, cw, b, tw, th);
+            HudAlpha.blit(g, tex, x + b, y + h - b, (float)b, (float)(th - b), mw, b, cw, b, tw, th);
         }
         if (mh > 0) {
-            g.blit(RenderPipelines.GUI_TEXTURED, tex, x, y + b, 0.0f, (float)b, b, mh, b, ch, tw, th);
-            g.blit(RenderPipelines.GUI_TEXTURED, tex, x + w - b, y + b, (float)(tw - b), (float)b, b, mh, b, ch, tw, th);
+            HudAlpha.blit(g, tex, x, y + b, 0.0f, (float)b, b, mh, b, ch, tw, th);
+            HudAlpha.blit(g, tex, x + w - b, y + b, (float)(tw - b), (float)b, b, mh, b, ch, tw, th);
         }
         if (mw > 0 && mh > 0) {
-            g.blit(RenderPipelines.GUI_TEXTURED, tex, x + b, y + b, (float)b, (float)b, mw, mh, cw, ch, tw, th);
+            HudAlpha.blit(g, tex, x + b, y + b, (float)b, (float)b, mw, mh, cw, ch, tw, th);
         }
     }
 
@@ -90,17 +90,17 @@ public final class HudDraw {
         int ch = th - 2 * b;
         int mw = w - 2 * b;
         int mh = h - 2 * b;
-        g.blit(RenderPipelines.GUI_TEXTURED, tex, x, y, 0.0f, 0.0f, b, b, b, b, tw, th);
-        g.blit(RenderPipelines.GUI_TEXTURED, tex, x + w - b, y, (float)(tw - b), 0.0f, b, b, b, b, tw, th);
-        g.blit(RenderPipelines.GUI_TEXTURED, tex, x, y + h - b, 0.0f, (float)(th - b), b, b, b, b, tw, th);
-        g.blit(RenderPipelines.GUI_TEXTURED, tex, x + w - b, y + h - b, (float)(tw - b), (float)(th - b), b, b, b, b, tw, th);
+        HudAlpha.blit(g, tex, x, y, 0.0f, 0.0f, b, b, b, b, tw, th);
+        HudAlpha.blit(g, tex, x + w - b, y, (float)(tw - b), 0.0f, b, b, b, b, tw, th);
+        HudAlpha.blit(g, tex, x, y + h - b, 0.0f, (float)(th - b), b, b, b, b, tw, th);
+        HudAlpha.blit(g, tex, x + w - b, y + h - b, (float)(tw - b), (float)(th - b), b, b, b, b, tw, th);
         if (mw > 0) {
-            g.blit(RenderPipelines.GUI_TEXTURED, tex, x + b, y, (float)b, 0.0f, mw, b, cw, b, tw, th);
-            g.blit(RenderPipelines.GUI_TEXTURED, tex, x + b, y + h - b, (float)b, (float)(th - b), mw, b, cw, b, tw, th);
+            HudAlpha.blit(g, tex, x + b, y, (float)b, 0.0f, mw, b, cw, b, tw, th);
+            HudAlpha.blit(g, tex, x + b, y + h - b, (float)b, (float)(th - b), mw, b, cw, b, tw, th);
         }
         if (mh > 0) {
-            g.blit(RenderPipelines.GUI_TEXTURED, tex, x, y + b, 0.0f, (float)b, b, mh, b, ch, tw, th);
-            g.blit(RenderPipelines.GUI_TEXTURED, tex, x + w - b, y + b, (float)(tw - b), (float)b, b, mh, b, ch, tw, th);
+            HudAlpha.blit(g, tex, x, y + b, 0.0f, (float)b, b, mh, b, ch, tw, th);
+            HudAlpha.blit(g, tex, x + w - b, y + b, (float)(tw - b), (float)b, b, mh, b, ch, tw, th);
         }
     }
 }
