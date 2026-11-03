@@ -1,5 +1,7 @@
 package dev.rpgcombat.extras;
 
+import dev.rpgcombat.spatial.Spatial;
+import dev.rpgcombat.spatial.SpatialSettings;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
@@ -98,6 +100,13 @@ public final class PickupManager {
 		float ty = h * 0.5f + cfg.pickupOffsetY - 30f;
 		float follow = Fx.damp(dt, 14f);
 
+		// seluruh tumpukan dimiringkan sebagai satu bidang nominal (sama dengan kotak di editor HUD)
+		SpatialSettings st = Spatial.get(Spatial.PICKUP);
+		float w0 = 150f * sc;
+		float h0 = 29f * sc;
+		boolean sp = Spatial.begin(g, st, right - w0 / 2f, ty + h0 / 2f, w0, h0, false, cfg.pickupOpacity);
+		float fadeK = Spatial.fade(st);
+
 		for (int i = 0, n = VISIBLE.size(); i < n; i++) {
 			PickupNotification p = VISIBLE.get(i);
 
@@ -132,14 +141,15 @@ public final class PickupManager {
 			float bump = Math.max(0f, 1f - (now - p.bumpMs) / 200f);
 			s *= 1f + 0.12f * bump * bump;
 
-			if (al * cfg.pickupOpacity <= 0.02f) continue;
+			if (al * cfg.pickupOpacity * fadeK <= 0.02f) continue;
 
 			g.pose().pushMatrix();
 			g.pose().translate(right + xo * sc, p.y + p.height * sc * 0.5f);
 			g.pose().scale(sc * s, sc * s);
 			g.pose().translate(0f, -p.height * 0.5f);
-			p.draw(g, mc.font, al, cfg.pickupOpacity);
+			p.draw(g, mc.font, al, cfg.pickupOpacity * fadeK);
 			g.pose().popMatrix();
 		}
+		Spatial.end(g, sp);
 	}
 }

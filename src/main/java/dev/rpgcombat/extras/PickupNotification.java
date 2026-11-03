@@ -13,6 +13,8 @@ import net.minecraft.world.item.ItemStack;
  */
 final class PickupNotification {
 	static final int LINE = 10;
+	/** Tinggi baris judul = tinggi ikon; teks dipusatkan vertikal terhadap ikon. */
+	static final int HEADER_H = ItemIcon.SIZE;
 	private static final int ICON_GAP = 4;
 
 	final ItemStack sample;
@@ -65,15 +67,16 @@ final class PickupNotification {
 		countStr = "+" + count;
 		countW = font.width(countStr);
 
-		int w = countW + 4 + nameW;
+		// baris judul: [+N] [Nama] [ikon]  (ikon di sebelah kanan teks, satu baris)
+		int w = countW + 4 + nameW + ICON_GAP + ItemIcon.SIZE;
 		if (hasDur) w = Math.max(w, Math.max(durStrW, 70));
 		if (chips != null) w = Math.max(w, chips.width());
-		this.width = ItemIcon.SIZE + ICON_GAP + w;
+		this.width = w;
 
-		int h = LINE;
+		int h = HEADER_H;
 		if (hasDur) h += 13;
-		if (chips != null) h += chips.height();
-		this.height = Math.max(ItemIcon.SIZE, h);
+		if (chips != null && chips.rows() > 0) h += 2 + chips.height();
+		this.height = h;
 	}
 
 	void start(long now, int durationMs) {
@@ -89,29 +92,30 @@ final class PickupNotification {
 	void draw(GuiGraphicsExtractor g, Font font, float anim, float op) {
 		float alpha = anim * op;
 		int left = -width;
-		if (op >= 0.3f) ItemIcon.draw(g, sample, left, 0, anim);
 
-		int cx = left + ItemIcon.SIZE + ICON_GAP;
-		int y0 = 0;
+		// baris judul: teks dan ikon sama-sama dipusatkan di tengah baris setinggi 16 px
+		int textY = (HEADER_H - 8) / 2;
+		g.text(font, countStr, left, textY, Fx.argb(alpha, 0x55FF55), true);
+		g.text(font, nameStr, left + countW + 4, textY, Fx.argb(alpha, nameRgb), true);
+		if (op >= 0.3f) {
+			ItemIcon.draw(g, sample, left + countW + 4 + nameW + ICON_GAP, 0, anim);
+		}
 
-		g.text(font, countStr, cx, y0, Fx.argb(alpha, 0x55FF55), true);
-		g.text(font, nameStr, cx + countW + 4, y0, Fx.argb(alpha, nameRgb), true);
-		y0 += LINE;
-
+		int y0 = HEADER_H;
 		if (hasDur) {
-			g.text(font, durStr, cx, y0, Fx.argb(alpha * 0.85f, 0xC8D0DC), true);
+			g.text(font, durStr, left, y0, Fx.argb(alpha * 0.85f, 0xC8D0DC), true);
 			y0 += 10;
 			int bw = Math.max(durStrW, 70);
-			g.fill(cx, y0, cx + bw, y0 + 2, Fx.argb(alpha * 0.6f, 0x20242C));
+			g.fill(left, y0, left + bw, y0 + 2, Fx.argb(alpha * 0.6f, 0x20242C));
 			int filled = Math.round(bw * durFrac);
 			if (filled > 0) {
-				g.fill(cx, y0, cx + filled, y0 + 2, Fx.argb(alpha, Fx.lerpColor(0xFF4040, 0x55FF55, durFrac)));
+				g.fill(left, y0, left + filled, y0 + 2, Fx.argb(alpha, Fx.lerpColor(0xFF4040, 0x55FF55, durFrac)));
 			}
 			y0 += 3;
 		}
 
 		if (chips != null && !chips.isEmpty()) {
-			chips.draw(g, font, cx, y0, alpha, false);
+			chips.draw(g, font, left, y0 + 2, alpha, false);
 		}
 	}
 }

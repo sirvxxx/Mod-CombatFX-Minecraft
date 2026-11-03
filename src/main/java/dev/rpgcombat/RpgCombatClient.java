@@ -9,7 +9,8 @@ import dev.rpgcombat.extras.ExtrasConfig;
 import dev.rpgcombat.extras.HotbarName;
 import dev.rpgcombat.gui.HudCustomizerScreen;
 import dev.rpgcombat.theme.PackTheme;
-import dev.rpgcombat.gui.SettingsScreen;
+import dev.rpgcombat.menu.CardDeckScreen;
+import dev.rpgcombat.menu.Features;
 import dev.rpghud.HudCommands;
 import dev.rpghud.HudConfig;
 import dev.rpghud.HudRenderer;
@@ -44,6 +45,7 @@ public final class RpgCombatClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		// 0) satu config untuk semuanya
 		ModConfig.load();
+		Features.register(); // semua halaman menu
 
 		// 1) modul RPG HUD
 		hideVanilla(VanillaHudElements.HEALTH_BAR);
@@ -90,7 +92,7 @@ public final class RpgCombatClient implements ClientModInitializer {
 			if (edit) {
 				McCompat.openScreen(new HudCustomizerScreen());
 			} else if (open) {
-				McCompat.openScreen(new SettingsScreen());
+				McCompat.openScreen(new CardDeckScreen());
 			}
 		});
 

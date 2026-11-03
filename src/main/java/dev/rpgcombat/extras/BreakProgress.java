@@ -1,5 +1,7 @@
 package dev.rpgcombat.extras;
 
+import dev.rpgcombat.spatial.Spatial;
+import dev.rpgcombat.spatial.SpatialSettings;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import net.minecraft.client.Minecraft;
@@ -110,18 +112,24 @@ public final class BreakProgress {
 			}
 		}
 		if (alpha <= 0.01f) return;
-		op = cfg.breakOpacity;
+		SpatialSettings st = Spatial.get(Spatial.MINING);
+		op = cfg.breakOpacity * Spatial.fade(st);
 
 		var window = mc.getWindow();
 		int cx = window.getGuiScaledWidth() / 2 + cfg.breakOffsetX;
 		int cy = window.getGuiScaledHeight() / 2;
 		float p = Fx.clamp01(shown);
 
+		// bidang nominal = kotak bar linear (sama dengan kotak di editor HUD)
+		int bw = Math.max(20, Math.round(44 * cfg.breakScale));
+		int bh = Math.round(16 * cfg.breakScale);
+		boolean sp = Spatial.begin(g, st, cx, cy + cfg.breakOffsetY + bh / 2f, bw, bh, false, op);
 		if (cfg.breakStyle == 1) {
 			drawCircular(g, mc, cfg, cx, cy, p);
 		} else {
 			drawLinear(g, mc, cfg, cx, cy, p);
 		}
+		Spatial.end(g, sp);
 	}
 
 	private static void drawLinear(GuiGraphicsExtractor g, Minecraft mc, ExtrasConfig cfg, int cx, int cy, float p) {

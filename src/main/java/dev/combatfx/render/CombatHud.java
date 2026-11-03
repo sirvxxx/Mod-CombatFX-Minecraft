@@ -2,6 +2,8 @@ package dev.combatfx.render;
 
 import dev.combatfx.CombatConfig;
 import dev.combatfx.combat.ComboManager;
+import dev.rpgcombat.spatial.Spatial;
+import dev.rpgcombat.spatial.SpatialSettings;
 import java.util.List;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -115,9 +117,10 @@ public final class CombatHud {
 		Font font = mc.font;
 		var window = mc.getWindow();
 
+		SpatialSettings st = Spatial.get(Spatial.COMBO);
 		long remain = ComboManager.remainingMs(now);
 		float fade = Math.min(1f, remain / 250f);
-		int a = Math.max(5, (int) (fade * cfg.comboOpacity * 255f));
+		int a = Math.max(5, (int) (fade * cfg.comboOpacity * Spatial.fade(st) * 255f));
 
 		float pulse = 1f;
 		if (cfg.comboPulse) {
@@ -133,6 +136,11 @@ public final class CombatHud {
 		float x = window.getGuiScaledWidth() / 2f + cfg.comboOffsetX;
 		float y = window.getGuiScaledHeight() / 2f + cfg.comboOffsetY;
 		float labelW = font.width(label) * scale;
+
+		// kotak nominal (sama dengan kotak di editor HUD) sebagai bidang yang dimiringkan
+		int w0 = Math.round(font.width("x12") * 1.8f * cfg.comboScale + 6 + font.width("COMBO") * 0.75f);
+		int h0 = Math.round(9 * 1.8f * cfg.comboScale + 8);
+		boolean sp = Spatial.begin(g, st, x + w0 / 2f, y + h0 / 2f, w0, h0, false, cfg.comboOpacity);
 
 		g.pose().pushMatrix();
 		g.pose().translate(x, y);
@@ -153,7 +161,10 @@ public final class CombatHud {
 		g.text(font, "COMBO", 0, 0, (a << 24) | 0xFFFFFF, true);
 		g.pose().popMatrix();
 
-		if (!cfg.showComboBar) return;
+		if (!cfg.showComboBar) {
+			Spatial.end(g, sp);
+			return;
+		}
 
 		int barW = Math.max(40, (int) labelW);
 		int barH = 3;
@@ -174,6 +185,7 @@ public final class CombatHud {
 			g.fill(barX, barY, barX + filled, barY + barH, (a << 24) | barRgb);
 			g.fill(barX, barY, barX + filled, barY + 1, (a << 24) | brighten(barRgb));
 		}
+		Spatial.end(g, sp);
 	}
 
 	private static int comboColor(int combo, long now) {

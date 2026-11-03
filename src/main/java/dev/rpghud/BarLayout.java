@@ -1,5 +1,7 @@
 package dev.rpghud;
 
+import dev.rpgcombat.spatial.Spatial;
+import dev.rpgcombat.spatial.SpatialSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
@@ -113,16 +115,22 @@ public final class BarLayout {
         }
     }
 
-    /** Pindah ke posisi bagian (offset), skalakan dari sudut kirinya, dan set opacity. */
-    private static void begin(GuiGraphicsExtractor g, int[] r, int dx, int dy, float scale, float opacity) {
+    private static boolean spatialOn;
+
+    /** Pindah ke posisi bagian (offset), skalakan dari sudut kirinya, pasang transformasi 2.5D, dan set opacity. */
+    private static void begin(GuiGraphicsExtractor g, int[] r, int dx, int dy, float scale, float opacity, String key) {
         g.pose().pushMatrix();
         g.pose().translate((float)(r[0] + dx), (float)(r[1] + dy));
         g.pose().scale(scale, scale);
         g.pose().translate((float)(-r[0]), (float)(-r[1]));
-        HudAlpha.set(opacity);
+        SpatialSettings st = Spatial.get(key);
+        spatialOn = Spatial.begin(g, st, r[0] + r[2] / 2.0f, r[1] + r[3] / 2.0f, r[2], r[3], true, opacity);
+        HudAlpha.set(opacity * Spatial.fade(st));
     }
 
     private static void end(GuiGraphicsExtractor g) {
+        Spatial.end(g, spatialOn);
+        spatialOn = false;
         g.pose().popMatrix();
         HudAlpha.set(1.0f);
     }
@@ -133,7 +141,7 @@ public final class BarLayout {
         int[] r;
         if (face) {
             r = BarLayout.sectionRect(c, SEC_FACE);
-            BarLayout.begin(g, r, c.faceDx, c.faceDy, c.faceScale, c.faceOpacity);
+            BarLayout.begin(g, r, c.faceDx, c.faceDy, c.faceScale, c.faceOpacity, Spatial.FACE);
             HudDraw.frame(g, t, 0, 0, 40, 40);
             HudAlpha.blit(g, HudState.skin, 4, 4, 8.0f, 8.0f, 32, 32, 8, 8, 64, 64);
             HudAlpha.blit(g, HudState.skin, 4, 4, 40.0f, 8.0f, 32, 32, 8, 8, 64, 64);
@@ -148,13 +156,13 @@ public final class BarLayout {
         }
         if (BarLayout.panelVisible(c)) {
             r = BarLayout.sectionRect(c, SEC_BARS);
-            BarLayout.begin(g, r, c.barsDx, c.barsDy, c.barsScale, c.barsOpacity);
+            BarLayout.begin(g, r, c.barsDx, c.barsDy, c.barsScale, c.barsOpacity, Spatial.BARS);
             BarLayout.drawPanel(g, mc, c, t, face ? 44 : 0, face ? 4 : 0);
             BarLayout.end(g);
         }
         if (BarLayout.infoVisible(c)) {
             r = BarLayout.sectionRect(c, SEC_INFO);
-            BarLayout.begin(g, r, c.infoDx, c.infoDy, c.infoScale, c.infoOpacity);
+            BarLayout.begin(g, r, c.infoDx, c.infoDy, c.infoScale, c.infoOpacity, Spatial.INFO);
             BarLayout.drawInfo(g, mc, c, t, r[1], r[2]);
             BarLayout.end(g);
         }

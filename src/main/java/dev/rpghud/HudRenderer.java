@@ -4,6 +4,8 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
+import dev.rpgcombat.spatial.Spatial;
+import dev.rpgcombat.spatial.SpatialSettings;
 import org.joml.Matrix3x2fStack;
 
 public final class HudRenderer {
@@ -90,8 +92,13 @@ public final class HudRenderer {
         if (c.layoutType == 1) {
             BarLayout.draw(g, mc, p, c);
         } else {
-            HudAlpha.set(c.barsOpacity);
+            SpatialSettings st = Spatial.get(Spatial.CIRCLE);
+            int cw = CircleLayout.width(c);
+            int ch = CircleLayout.height(c);
+            HudAlpha.set(c.barsOpacity * Spatial.fade(st));
+            boolean sp = Spatial.begin(g, st, cw / 2.0f, ch / 2.0f, cw, ch, true, c.barsOpacity);
             CircleLayout.draw(g, mc, p, c);
+            Spatial.end(g, sp);
             HudAlpha.set(1.0f);
         }
         pose.popMatrix();

@@ -1,5 +1,7 @@
 package dev.rpgcombat.extras;
 
+import dev.rpgcombat.spatial.Spatial;
+import dev.rpgcombat.spatial.SpatialSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -96,7 +98,8 @@ public final class HotbarName {
 		float alpha = age < 120L ? Fx.clamp01(age / 120f) : 1f;
 		long left = LIFE_MS - age;
 		if (left < FADE_MS) alpha = Math.min(alpha, left / (float) FADE_MS);
-		alpha *= cfg.hotbarNameOpacity;
+		SpatialSettings st = Spatial.get(Spatial.HOTBAR);
+		alpha *= cfg.hotbarNameOpacity * Spatial.fade(st);
 		if (alpha <= 0.02f) return;
 
 		var window = mc.getWindow();
@@ -112,10 +115,12 @@ public final class HotbarName {
 		g.pose().translate(x, bottom);
 		g.pose().scale(sc, sc);
 		g.pose().translate(0f, (float) -h);
+		boolean sp = Spatial.begin(g, st, 0f, h / 2f, 110f, h, false, alpha);
 		g.text(font, text, -textW / 2, 0, Fx.argb(alpha, rgb), true);
 		if (rows > 0) {
 			chips.draw(g, font, 0, NAME_H + 2, alpha, true);
 		}
+		Spatial.end(g, sp);
 		g.pose().popMatrix();
 	}
 }
