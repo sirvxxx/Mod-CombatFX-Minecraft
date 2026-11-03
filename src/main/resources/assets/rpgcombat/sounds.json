@@ -1,0 +1,5 @@
+{
+  "ui.click":  { "sounds": [ "rpgcombat:ui/click" ],  "subtitle": "" },
+  "ui.hover":  { "sounds": [ "rpgcombat:ui/hover" ],  "subtitle": "" },
+  "ui.whoosh": { "sounds": [ "rpgcombat:ui/whoosh" ], "subtitle": "" }
+}
