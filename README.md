@@ -7,7 +7,8 @@ Fabric, Minecraft 26.1.2 / 26.2 (build matrix di `.github/workflows/build.yml`).
 - **RPG HUD** (`dev.rpghud`): bar horizontal / lingkaran, 6 tema warna + tema Auto dari resource pack
 - **CombatFX** (`dev.combatfx`): angka damage melayang, combo counter, critical hit
 - **Extras** (`dev.rpgcombat.extras`): bar progress hancur blok (monokrom), popup item pickup (ikon + enchant + durability), popup nama + enchant item di hotbar
-- **Menu** (`dev.rpgcombat.gui`): `SettingsScreen` (tombol `H`, tab Opacity per elemen) dan `HudCustomizerScreen` (tombol `J`, drag & drop; kartu pemain, status bar, koordinat/FPS, combo, popup loot, bar menambang, nama hotbar)
+- **Menu baru** (`dev.rpgcombat.menu`, `dev.rpgcombat.ui`): `CardDeckScreen` (tombol `H`) = dek kartu melayang, transisi ke panel navigasi + grid fitur, search, favorit, suara UI lokal. Halaman = daftar `Row`, didaftarkan di `Features.java`. Menu klasik tetap ada di QoL > Menu & sounds.
+- **Menu lama** (`dev.rpgcombat.gui`): `SettingsScreen` (tombol `H`, tab Opacity per elemen) dan `HudCustomizerScreen` (tombol `J`, drag & drop; kartu pemain, status bar, koordinat/FPS, combo, popup loot, bar menambang, nama hotbar)
 
 ## Config
 Satu file: `.minecraft/config/rpgcombat.json` (seksi `hud`, `combat`, `extras`). Posisi dan skala setiap elemen
