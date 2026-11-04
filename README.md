@@ -11,6 +11,8 @@ Fabric, Minecraft 26.1.2 / 26.2 (build matrix di `.github/workflows/build.yml`).
 - **Efek tempur** (`dev.rpgcombat.fx`, `dev.rpgcombat.preview`): Trails, Hit effects, Kill effects. Satu `FxStyle` dipakai efek di dunia (partikel vanilla) DAN preview 2D di menu. Preview: `PreviewCanvas` + `TrailScene` / `HitScene` / `KillScene`.
 - **Menu lama** (`dev.rpgcombat.gui`): `SettingsScreen` (tombol `H`, tab Opacity per elemen) dan `HudCustomizerScreen` (tombol `J`, drag & drop; kartu pemain, status bar, koordinat/FPS, combo, popup loot, bar menambang, nama hotbar)
 
+- **Real Wounds** (`dev.rpgcombat.vfx`): busur tebasan custom + partikel spark/debris/ledakan (pilih gaya "Real Wounds" di menu Hit effects)
+
 ## Config
 Satu file: `.minecraft/config/rpgcombat.json` (seksi `hud`, `combat`, `extras`). Posisi dan skala setiap elemen
 tersimpan otomatis saat mouse dilepas di mode edit.
