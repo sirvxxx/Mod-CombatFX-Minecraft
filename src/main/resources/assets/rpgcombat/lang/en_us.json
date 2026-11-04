@@ -194,6 +194,7 @@
   "rpgcombat.fx.hit.ember": "Ember",
   "rpgcombat.fx.hit.frost": "Frost",
   "rpgcombat.fx.hit.static": "Static",
+  "rpgcombat.fx.hit.realwounds": "Real Wounds",
   "rpgcombat.fx.kill.burst": "Burst",
   "rpgcombat.fx.kill.soul": "Soul",
   "rpgcombat.fx.kill.static": "Lightning",
