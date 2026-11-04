@@ -22,7 +22,8 @@ public final class FxStyles {
 			new FxStyle("arcane",  "hit",   0xB26BFF, 0x6B2BFF, FxStyle.PLUS,   "ENCHANTED_HIT",     null,              0f,  80f, 40f, 30f,  0.5f, 1f),
 			new FxStyle("ember",   "hit",   0xFF8A1F, 0xFF3B1F, FxStyle.FLAME,  "FLAME",             null,              0f,  70f, 36f, -30f, 0.55f, 2f),
 			new FxStyle("frost",   "hit",   0xDDF6FF, 0x9AD8FF, FxStyle.PLUS,   "SNOWFLAKE",         null,              0f,  70f, 36f, 40f,  0.6f, 1f),
-			new FxStyle("static",  "hit",   0xBFEFFF, 0x55FFFF, FxStyle.PLUS,   "ELECTRIC_SPARK",    null,              0f,  100f, 44f, 0f,  0.35f, 1f));
+			new FxStyle("static",  "hit",   0xBFEFFF, 0x55FFFF, FxStyle.PLUS,   "ELECTRIC_SPARK",    null,              0f,  100f, 44f, 0f,  0.35f, 1f),
+			new FxStyle("realwounds", "hit", 0xC0141F, 0x5C0A0A, FxStyle.PLUS,   "CRIT",              null,              0f,  90f,  40f, 20f, 0.5f, 1f));
 
 	public static final List<FxStyle> KILLS = List.of(
 			new FxStyle("burst",   "kill",  0xFFE066, 0xFF3B1F, FxStyle.SQUARE, "CRIT",              "FLAME",           0f,  120f, 50f, 50f, 0.8f, 2f),

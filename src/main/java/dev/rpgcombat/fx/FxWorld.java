@@ -46,6 +46,10 @@ public final class FxWorld {
 	public static void onHit(Minecraft mc, LivingEntity target, boolean crit) {
 		FxConfig c = FxConfig.get();
 		if (!c.hitEnabled || mc.level == null || (c.hitCritOnly && !crit)) return;
+		if ("realwounds".equals(c.hitStyle)) {
+			realWounds(mc, target, crit);
+			return;
+		}
 		FxStyle s = FxStyles.find(FxStyles.HITS, c.hitStyle);
 		burst(mc, target, s, Math.round((crit ? 16 : 8) * c.hitIntensity), 0.6);
 	}
@@ -56,6 +60,23 @@ public final class FxWorld {
 		if (!c.killEnabled || mc.level == null) return;
 		FxStyle s = FxStyles.find(FxStyles.KILLS, c.killStyle);
 		burst(mc, target, s, Math.round(30 * c.killIntensity), 0.5);
+	}
+
+	/** Real Wounds: busur tebasan + luka + partikel (lihat dev.rpgcombat.vfx). */
+	private static void realWounds(Minecraft mc, LivingEntity t, boolean crit) {
+		ThreadLocalRandom r = ThreadLocalRandom.current();
+		Vec3 hit = new Vec3(
+				t.getX() + (r.nextDouble() - 0.5) * 0.3,
+				t.getY() + t.getBbHeight() * 0.6,
+				t.getZ() + (r.nextDouble() - 0.5) * 0.3);
+		// normal: horizontal dari target menuju pemain (menghadap kita)
+		Vec3 normal = null;
+		if (mc.player != null) {
+			normal = new Vec3(mc.player.getX() - t.getX(), 0, mc.player.getZ() - t.getZ());
+			if (normal.lengthSqr() < 1e-6) normal = null;
+		}
+		if (normal == null) normal = new Vec3(1, 0, 0);
+		dev.rpgcombat.vfx.VfxBridge.onHit(mc.level, hit, normal.normalize(), crit);
 	}
 
 	private static void burst(Minecraft mc, LivingEntity t, FxStyle s, int count, double heightFrac) {
