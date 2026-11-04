@@ -58,7 +58,6 @@ public final class RpgCombatClient implements ClientModInitializer {
 		// 2a) VFX Real Wounds: partikel custom + busur tebasan
 		dev.rpgcombat.vfx.ModParticles.register();
 		dev.rpgcombat.vfx.ModParticles.registerClient();
-		dev.rpgcombat.vfx.SlashArcRenderer.init();
 		ClientTickEvents.END_CLIENT_TICK.register(client -> dev.rpgcombat.vfx.SlashArcRenderer.tick());
 
 		// 2) modul CombatFX

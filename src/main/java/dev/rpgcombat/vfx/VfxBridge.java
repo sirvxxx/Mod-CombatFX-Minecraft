@@ -9,7 +9,6 @@ public final class VfxBridge {
 	private VfxBridge() {}
 
 	private static final Vec3 UP = new Vec3(0, 1, 0);
-	private static final int SLASH_COLOR = 0xC8F0FF;
 
 	/**
 	 * @param hit    titik kena di tubuh target
@@ -25,7 +24,7 @@ public final class VfxBridge {
 		side = side.normalize().scale(r.nextBoolean() ? 1 : -1);
 		Vec3 slashDir = side.add(UP.scale(-0.6)).normalize();
 
-		SlashArcRenderer.spawn(hit, slashDir, normal, crit ? 1.6f : 1.1f, crit ? 10 : 7, SLASH_COLOR);
+		SlashArcRenderer.spawn(level, hit, slashDir, normal, crit ? 1.6f : 1.1f, crit ? 10 : 7);
 
 		int sparks = crit ? 10 : 5;
 		for (int i = 0; i < sparks; i++) {
