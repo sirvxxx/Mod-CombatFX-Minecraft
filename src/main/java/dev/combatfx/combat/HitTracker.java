@@ -4,6 +4,7 @@ import dev.combatfx.CombatConfig;
 import dev.combatfx.Config;
 import dev.combatfx.render.IndicatorManager;
 import dev.combatfx.render.Tier;
+import dev.rpgcombat.fx.FxWorld;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -88,6 +89,8 @@ public final class HitTracker {
 							format(damage), tier, now
 					);
 					ComboManager.registerHit(now);
+					FxWorld.onHit(mc, le, p.crit);
+					if (current <= 0.001f) FxWorld.onKill(mc, le);
 
 					for (Pending other : PENDING) {
 						if (other != p && other.entityId == p.entityId) other.healthBefore = current;

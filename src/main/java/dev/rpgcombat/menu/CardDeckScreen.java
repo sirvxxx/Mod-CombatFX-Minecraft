@@ -4,6 +4,8 @@ import dev.rpgcombat.gui.MouseInput;
 import dev.rpgcombat.gui.SettingsScreen;
 import dev.rpgcombat.preview.DollStage;
 import dev.rpgcombat.preview.ParticlePool;
+import dev.rpgcombat.preview.PreviewCanvas;
+import dev.rpgcombat.preview.PreviewScene;
 import dev.rpgcombat.ui.Anim;
 import dev.rpgcombat.ui.Anim.Spring;
 import dev.rpgcombat.ui.Draw;
@@ -401,10 +403,16 @@ public class CardDeckScreen extends Screen {
 		}
 	}
 
+	/** Lebar panel baris. Kalau halaman punya preview, panel dipersempit supaya kanvas preview tetap muat. */
+	private int pagePanelW() {
+		boolean scene = page != null && page.scene() != null;
+		return scene ? Math.min(320, Math.max(230, cw() - 170)) : Math.min(cw(), 320);
+	}
+
 	private void pressRow(int mx, int my) {
 		if (page == null) return;
 		int x0 = cx0();
-		int panelW = Math.min(cw(), 320);
+		int panelW = pagePanelW();
 		int panelH = this.height - BODY_Y - 12;
 		if (!inside(x0, BODY_Y, panelW, panelH, mx, my)) return;
 		int y = BODY_Y + 6 - Math.round(scroll.value);
@@ -756,7 +764,7 @@ public class CardDeckScreen extends Screen {
 		float a = ca * pageT.value;
 		if (a < 0.02f || page == null) return;
 		int x0 = cx0() + Math.round((1f - pageT.value) * 24f);
-		int panelW = Math.min(cw(), 320);
+		int panelW = pagePanelW();
 		int panelH = this.height - BODY_Y - 12;
 		Draw.glass(g, x0, BODY_Y, panelW, panelH, Theme.RADIUS, a, Theme.PANEL, 0x6E6788);
 
@@ -786,6 +794,11 @@ public class CardDeckScreen extends Screen {
 	}
 
 	private void drawPreview(GuiGraphicsExtractor g, Minecraft mc, int x, int y, int w, int h, float a) {
+		PreviewScene scene = page != null ? page.scene() : null;
+		if (scene != null) {
+			PreviewCanvas.render(g, mc, scene, x, y, w, h, a, dt, time);
+			return;
+		}
 		Draw.glass(g, x, y, w, h, Theme.RADIUS, a, 0x080612, 0x6E6788);
 		Draw.text(g, this.font, tr("rpgcombat.menu.preview"), x + 10, y + 8, Theme.GOLD, a);
 		Draw.text(g, this.font, fit(tr("rpgcombat.menu.preview_note"), w - 20), x + 10, y + 20, Theme.TEXT_DIM, a);

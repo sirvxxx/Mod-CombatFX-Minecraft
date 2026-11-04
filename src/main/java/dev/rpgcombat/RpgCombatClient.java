@@ -5,6 +5,7 @@ import dev.combatfx.combat.HitTracker;
 import dev.combatfx.render.CombatHud;
 import dev.rpgcombat.config.ModConfig;
 import dev.rpgcombat.extras.Extras;
+import dev.rpgcombat.fx.FxWorld;
 import dev.rpgcombat.extras.ExtrasConfig;
 import dev.rpgcombat.extras.HotbarName;
 import dev.rpgcombat.gui.HudCustomizerScreen;
@@ -76,6 +77,7 @@ public final class RpgCombatClient implements ClientModInitializer {
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			PackTheme.tick(client); // tema otomatis dari resource pack
+			FxWorld.tick(client);   // trail di dunia
 			boolean open = false;
 			boolean edit = false;
 			while (openKey.consumeClick()) open = true;

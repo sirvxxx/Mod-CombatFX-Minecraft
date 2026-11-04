@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.combatfx.CombatConfig;
 import dev.rpgcombat.extras.ExtrasConfig;
+import dev.rpgcombat.fx.FxConfig;
 import dev.rpgcombat.spatial.SpatialSettings;
 import dev.rpgcombat.ui.UiConfig;
 import dev.rpghud.HudConfig;
@@ -33,6 +34,7 @@ public final class ModConfig {
 	/** Rotasi 2.5D + kedalaman per elemen: face, bars, info, combo, pickup, mining, hotbar, rpg_hud. */
 	public Map<String, SpatialSettings> spatial = new HashMap<>();
 	public UiConfig ui = new UiConfig();
+	public FxConfig fx = new FxConfig();
 
 	private ModConfig() {}
 
@@ -57,6 +59,8 @@ public final class ModConfig {
 		if (instance.extras == null) instance.extras = new ExtrasConfig();
 		if (instance.spatial == null) instance.spatial = new HashMap<>();
 		if (instance.ui == null) instance.ui = new UiConfig();
+		if (instance.fx == null) instance.fx = new FxConfig();
+		instance.fx.sanitize();
 		instance.ui.sanitize();
 		instance.hud.sanitize();
 		instance.combat.sanitize();
@@ -80,6 +84,7 @@ public final class ModConfig {
 		instance.extras = new ExtrasConfig();
 		instance.spatial = new HashMap<>();
 		instance.ui = new UiConfig();
+		instance.fx = new FxConfig();
 		save();
 	}
 }

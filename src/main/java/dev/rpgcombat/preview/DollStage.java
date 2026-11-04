@@ -31,6 +31,12 @@ public final class DollStage {
 	 */
 	public static void draw(GuiGraphicsExtractor g, Minecraft mc, float cx, float footY, float scale,
 			float time, float swing, float phase, float alpha) {
+		draw(g, mc, cx, footY, scale, time, swing, phase, alpha, 0f);
+	}
+
+	/** attack 0..1: lengan kiri (sisi kanan layar) terayun ke depan untuk menyerang. */
+	public static void draw(GuiGraphicsExtractor g, Minecraft mc, float cx, float footY, float scale,
+			float time, float swing, float phase, float alpha, float attack) {
 		LocalPlayer p = mc.player;
 		if (p == null || alpha <= 0.02f) return;
 		Identifier skin = SkinHelper.bodyTexture(p);
@@ -56,7 +62,7 @@ public final class DollStage {
 		HudAlpha.blit(g, skin, -4, 8, 20f, 36f, 8, 12, 8, 12, TEX, TEX);
 		g.pose().popMatrix();
 		limb(g, skin, 44, 20, 4, 12, 44, 36, -6f, 8f, -armSwing - idleArm);  // lengan kanan
-		limb(g, skin, 36, 52, 4, 12, 52, 52, 6f, 8f, armSwing + idleArm);    // lengan kiri
+		limb(g, skin, 36, 52, 4, 12, 52, 52, 6f, 8f, armSwing + idleArm - attack * 2.2f); // lengan kiri (menyerang)
 		HudAlpha.blit(g, skin, -4, 0, 8f, 8f, 8, 8, 8, 8, TEX, TEX);         // kepala
 		HudAlpha.blit(g, skin, -4, 0, 40f, 8f, 8, 8, 8, 8, TEX, TEX);        // topi
 

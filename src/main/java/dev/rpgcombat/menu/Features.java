@@ -2,6 +2,11 @@ package dev.rpgcombat.menu;
 
 import dev.combatfx.CombatConfig;
 import dev.rpgcombat.extras.ExtrasConfig;
+import dev.rpgcombat.fx.FxConfig;
+import dev.rpgcombat.fx.FxStyles;
+import dev.rpgcombat.preview.scenes.HitScene;
+import dev.rpgcombat.preview.scenes.KillScene;
+import dev.rpgcombat.preview.scenes.TrailScene;
 import dev.rpgcombat.gui.HudCustomizerScreen;
 import dev.rpgcombat.gui.SettingsScreen;
 import dev.rpgcombat.ui.Icon;
@@ -10,6 +15,7 @@ import dev.rpgcombat.ui.row.ButtonRow;
 import dev.rpgcombat.ui.row.ChoiceRow;
 import dev.rpgcombat.ui.row.ColorRow;
 import dev.rpgcombat.ui.row.LabelRow;
+import dev.rpgcombat.ui.row.StyleGridRow;
 import dev.rpgcombat.ui.row.Row;
 import dev.rpgcombat.ui.row.SliderRow;
 import dev.rpgcombat.ui.row.ToggleRow;
@@ -51,6 +57,34 @@ public final class Features {
 
 	// ------------------------------------------------------------------ COMBAT
 	private static void combat() {
+		add(new Feature("trails", Category.COMBAT, "rpgcombat.feat.trails", "rpgcombat.feat.trails.sub", Icon.SPARK,
+				() -> FxConfig.get().trailEnabled, v -> FxConfig.get().trailEnabled = v,
+				() -> List.<Row>of(
+						new StyleGridRow("rpgcombat.fx.style", FxStyles.TRAILS, () -> FxConfig.get().trailStyle, id -> FxConfig.get().trailStyle = id),
+						new SliderRow("rpgcombat.fx.density", 25, 200, 5, "%.0f%%",
+								() -> FxConfig.get().trailDensity * 100.0, v -> FxConfig.get().trailDensity = (float) (v / 100.0)),
+						new ChoiceRow("rpgcombat.fx.mode", List.of("rpgcombat.fx.mode.move", "rpgcombat.fx.mode.sprint"),
+								() -> FxConfig.get().trailSprintOnly ? 1 : 0, i -> FxConfig.get().trailSprintOnly = i == 1),
+						new ToggleRow("rpgcombat.fx.first_person", () -> FxConfig.get().trailFirstPerson, v -> FxConfig.get().trailFirstPerson = v)),
+				TrailScene::new));
+
+		add(new Feature("hits", Category.COMBAT, "rpgcombat.feat.hits", "rpgcombat.feat.hits.sub", Icon.BOLT,
+				() -> FxConfig.get().hitEnabled, v -> FxConfig.get().hitEnabled = v,
+				() -> List.<Row>of(
+						new StyleGridRow("rpgcombat.fx.style", FxStyles.HITS, () -> FxConfig.get().hitStyle, id -> FxConfig.get().hitStyle = id),
+						new SliderRow("rpgcombat.fx.intensity", 25, 200, 5, "%.0f%%",
+								() -> FxConfig.get().hitIntensity * 100.0, v -> FxConfig.get().hitIntensity = (float) (v / 100.0)),
+						new ToggleRow("rpgcombat.fx.crit_only", () -> FxConfig.get().hitCritOnly, v -> FxConfig.get().hitCritOnly = v)),
+				HitScene::new));
+
+		add(new Feature("kills", Category.COMBAT, "rpgcombat.feat.kills", "rpgcombat.feat.kills.sub", Icon.SWORD,
+				() -> FxConfig.get().killEnabled, v -> FxConfig.get().killEnabled = v,
+				() -> List.<Row>of(
+						new StyleGridRow("rpgcombat.fx.style", FxStyles.KILLS, () -> FxConfig.get().killStyle, id -> FxConfig.get().killStyle = id),
+						new SliderRow("rpgcombat.fx.intensity", 25, 200, 5, "%.0f%%",
+								() -> FxConfig.get().killIntensity * 100.0, v -> FxConfig.get().killIntensity = (float) (v / 100.0))),
+				KillScene::new));
+
 		add(new Feature("dmg", Category.COMBAT, "rpgcombat.feat.dmg", "rpgcombat.feat.dmg.sub", Icon.SWORD,
 				() -> CombatConfig.get().showDamageNumbers, v -> CombatConfig.get().showDamageNumbers = v,
 				() -> List.<Row>of(

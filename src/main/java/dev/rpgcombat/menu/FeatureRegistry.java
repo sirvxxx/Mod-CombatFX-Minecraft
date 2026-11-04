@@ -28,7 +28,7 @@ public final class FeatureRegistry {
 		Set<String> fav = UiConfig.get().favorites;
 		List<Feature> out = new ArrayList<>();
 		for (Feature f : ALL) {
-			if (favOnly && !fav.contains(f.id)) continue;
+			if (favOnly && !isFav(f, fav)) continue;
 			if (q.isEmpty()) {
 				if (cat != null && !favOnly && f.cat != cat) continue;
 			} else if (!matches(f, q)) {
@@ -38,9 +38,13 @@ public final class FeatureRegistry {
 		}
 		// urutan stabil: favorit dulu, sisanya sesuai urutan registrasi
 		List<Feature> sorted = new ArrayList<>(out.size());
-		for (Feature f : out) if (fav.contains(f.id)) sorted.add(f);
-		for (Feature f : out) if (!fav.contains(f.id)) sorted.add(f);
+		for (Feature f : out) if (isFav(f, fav)) sorted.add(f);
+		for (Feature f : out) if (!isFav(f, fav)) sorted.add(f);
 		return sorted;
+	}
+
+	private static boolean isFav(Feature f, Set<String> fav) {
+		return fav.contains(f.id) || f.hasFavoriteStyle(fav);
 	}
 
 	private static boolean matches(Feature f, String q) {
