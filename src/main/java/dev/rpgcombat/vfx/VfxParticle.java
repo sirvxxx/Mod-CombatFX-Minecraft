@@ -14,7 +14,7 @@ public class VfxParticle extends SingleQuadParticle {
 
 	VfxParticle(ClientLevel level, double x, double y, double z,
 			double vx, double vy, double vz, SpriteSet sprites, int maxAge, float size) {
-		super(level, x, y, z, vx, vy, vz);
+		super(level, x, y, z, vx, vy, vz, sprites.get(0, maxAge));
 		this.sprites = sprites;
 		this.lifetime = maxAge;
 		this.quadSize = size;
